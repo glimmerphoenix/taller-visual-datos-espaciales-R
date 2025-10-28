@@ -1,0 +1,48 @@
+project:
+  type: book
+  output-dir: docs
+  preview: 
+    port: 9001
+    browser: true
+
+book:
+  title: "taller-visual-datos-espaciales-R"
+  author:
+    - "María Jesús Algar"
+    - "Felipe Ortega"
+  date: "2025/10/28"
+  chapters:
+    - index.qmd
+    - part: "Fundamentos"
+      chapters:
+        - 01-introduccion.qmd
+        - 02-datos-espaciales.qmd
+        - 03-visualizacion-basica.qmd
+    - part: "Visualización avanzada"
+      chapters:
+        - 04-visualizacion-avanzada.qmd
+        - 05-mapas-interactivos.qmd
+        - 06-dashboards.qmd
+    - part: "Aplicaciones"
+      chapters:
+        - 07-casos-estudio.qmd
+    - 08-add-resources.qmd
+    - references.qmd
+  appendices: 
+    - A-command-ref.qmd
+    - B-packages.qmd
+    - app-refs.qmd
+
+lang: es
+bibliography: references.bib
+csl: apa.csl
+
+format:
+  html:
+    theme:
+      - cosmo
+      - brand
+    css: styles.css
+
+
+
