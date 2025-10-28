@@ -1,0 +1,175 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "taller-visual-datos-espaciales-R",
+    "section": "",
+    "text": "Preface\nThis is a Quarto book.\nTo learn more about Quarto books visit https://quarto.org/docs/books.",
+    "crumbs": [
+      "Preface"
+    ]
+  },
+  {
+    "objectID": "01-introduccion.html",
+    "href": "01-introduccion.html",
+    "title": "1  Introducción",
+    "section": "",
+    "text": "This is a book created from markdown and executable code.\nSee Knuth (1984) for additional discussion of literate programming.\n\n\n\n\nKnuth, D. E. (1984). Literate Programming. Comput. J., 27(2), 97-111. https://doi.org/10.1093/comjnl/27.2.97",
+    "crumbs": [
+      "Fundamentos",
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introducción</span>"
+    ]
+  },
+  {
+    "objectID": "02-datos-espaciales.html",
+    "href": "02-datos-espaciales.html",
+    "title": "2  Datos espaciales",
+    "section": "",
+    "text": "This is a book created from markdown and executable code.\nSee Knuth (1984) for additional discussion of literate programming.\n\n\n\n\nKnuth, D. E. (1984). Literate Programming. Comput. J., 27(2), 97-111. https://doi.org/10.1093/comjnl/27.2.97",
+    "crumbs": [
+      "Fundamentos",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Datos espaciales</span>"
+    ]
+  },
+  {
+    "objectID": "03-visualizacion-basica.html",
+    "href": "03-visualizacion-basica.html",
+    "title": "3  Visualización básica",
+    "section": "",
+    "text": "This is a book created from markdown and executable code.\nSee Knuth (1984) for additional discussion of literate programming.\n\n\n\n\nKnuth, D. E. (1984). Literate Programming. Comput. J., 27(2), 97-111. https://doi.org/10.1093/comjnl/27.2.97",
+    "crumbs": [
+      "Fundamentos",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Visualización básica</span>"
+    ]
+  },
+  {
+    "objectID": "04-visualizacion-avanzada.html",
+    "href": "04-visualizacion-avanzada.html",
+    "title": "4  Visualización avanzada",
+    "section": "",
+    "text": "This is a book created from markdown and executable code.\nSee Knuth (1984) for additional discussion of literate programming.\n\n\n\n\nKnuth, D. E. (1984). Literate Programming. Comput. J., 27(2), 97-111. https://doi.org/10.1093/comjnl/27.2.97",
+    "crumbs": [
+      "Visualización avanzada",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Visualización avanzada</span>"
+    ]
+  },
+  {
+    "objectID": "05-mapas-interactivos.html",
+    "href": "05-mapas-interactivos.html",
+    "title": "5  Mapas interactivos",
+    "section": "",
+    "text": "This is a book created from markdown and executable code.\nSee Knuth (1984) for additional discussion of literate programming.\n\n\n\n\nKnuth, D. E. (1984). Literate Programming. Comput. J., 27(2), 97-111. https://doi.org/10.1093/comjnl/27.2.97",
+    "crumbs": [
+      "Visualización avanzada",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Mapas interactivos</span>"
+    ]
+  },
+  {
+    "objectID": "06-dashboards.html",
+    "href": "06-dashboards.html",
+    "title": "6  Dashboards",
+    "section": "",
+    "text": "This is a book created from markdown and executable code.\nSee Knuth (1984) for additional discussion of literate programming.\n\n\n\n\nKnuth, D. E. (1984). Literate Programming. Comput. J., 27(2), 97-111. https://doi.org/10.1093/comjnl/27.2.97",
+    "crumbs": [
+      "Visualización avanzada",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Dashboards</span>"
+    ]
+  },
+  {
+    "objectID": "07-casos-estudio.html",
+    "href": "07-casos-estudio.html",
+    "title": "7  Casos de estudio",
+    "section": "",
+    "text": "This is a book created from markdown and executable code.\nSee Knuth (1984) for additional discussion of literate programming.\n\n\n\n\nKnuth, D. E. (1984). Literate Programming. Comput. J., 27(2), 97-111. https://doi.org/10.1093/comjnl/27.2.97",
+    "crumbs": [
+      "Aplicaciones",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Casos de estudio</span>"
+    ]
+  },
+  {
+    "objectID": "08-add-resources.html",
+    "href": "08-add-resources.html",
+    "title": "8  Recursos adicionales",
+    "section": "",
+    "text": "This is a book created from markdown and executable code.\nSee Knuth (1984) for additional discussion of literate programming.\n\n\n\n\nKnuth, D. E. (1984). Literate Programming. Comput. J., 27(2), 97-111. https://doi.org/10.1093/comjnl/27.2.97",
+    "crumbs": [
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Recursos adicionales</span>"
+    ]
+  },
+  {
+    "objectID": "references.html",
+    "href": "references.html",
+    "title": "Referencias",
+    "section": "",
+    "text": "Knuth, D. E. (1984). Literate programming. Comput. J.,\n27(2), 97–111. https://doi.org/10.1093/comjnl/27.2.97",
+    "crumbs": [
+      "Referencias"
+    ]
+  },
+  {
+    "objectID": "A-command-ref.html",
+    "href": "A-command-ref.html",
+    "title": "Apéndice A — Referencia de comandos",
+    "section": "",
+    "text": "A.1 Paquete ggplot2",
+    "crumbs": [
+      "Apéndices",
+      "<span class='chapter-number'>A</span>  <span class='chapter-title'>Referencia de comandos</span>"
+    ]
+  },
+  {
+    "objectID": "A-command-ref.html#paquete-ggplot2",
+    "href": "A-command-ref.html#paquete-ggplot2",
+    "title": "Apéndice A — Referencia de comandos",
+    "section": "",
+    "text": "Índice de funciones del paquete ggplot2: https://ggplot2.tidyverse.org/reference/.\nData visualization with ggplot2 cheat sheet: https://rstudio.github.io/cheatsheets/html/data-visualization.html.\nManual oficial de ggplot2: https://ggplot2-book.org (3ª ed. en progreso).",
+    "crumbs": [
+      "Apéndices",
+      "<span class='chapter-number'>A</span>  <span class='chapter-title'>Referencia de comandos</span>"
+    ]
+  },
+  {
+    "objectID": "A-command-ref.html#datos-espaciales",
+    "href": "A-command-ref.html#datos-espaciales",
+    "title": "Apéndice A — Referencia de comandos",
+    "section": "A.2 Datos espaciales",
+    "text": "A.2 Datos espaciales\n\nÍndice de funciones del paquete sf: https://r-spatial.github.io/sf/reference/index.html.\nÍndice de funciones del paquete terra: https://rspatial.github.io/terra/reference/index.html.\nSpatial Data Science with Applications in R (paquete sf): https://r-spatial.org/book/.\nGeocomputation with R (paquete terra): https://r.geocompx.org/.",
+    "crumbs": [
+      "Apéndices",
+      "<span class='chapter-number'>A</span>  <span class='chapter-title'>Referencia de comandos</span>"
+    ]
+  },
+  {
+    "objectID": "B-packages.html",
+    "href": "B-packages.html",
+    "title": "Apéndice B — Paquetes R y atribuciones",
+    "section": "",
+    "text": "B.1 Paquetes R\nPara ejecutar los ejemplos incluidos en este taller, se necesita tener instalado R y una IDE de desarrollo para este lenguaje, como por ejemplo RStudio o Microsoft VS Code.\nAdemás, es necesario instalar los paquete descritos en la Tabla B.1.",
+    "crumbs": [
+      "Apéndices",
+      "<span class='chapter-number'>B</span>  <span class='chapter-title'>Paquetes R y atribuciones</span>"
+    ]
+  },
+  {
+    "objectID": "B-packages.html#sec-pkg-requirements",
+    "href": "B-packages.html#sec-pkg-requirements",
+    "title": "Apéndice B — Paquetes R y atribuciones",
+    "section": "",
+    "text": "Tabla B.1: Listado de paquetes R utilizados en los ejemplos de este taller.\n\n\n\n\n\n\n\n\n\nPaquete\nDescripción\n\n\n\n\nggplot2\nPaquete principal de visualización de datos en el Tidyverse\n\n\ntidyverse\nMetapaquete que instala las herramientas principales del Tidyverse\n\n\nagridat\nConjunto de datos sobre experimentos deagricultura, incluyendo cultivos de campo, cultivos arbóreos o estudios con animales, entre otros\n\n\nHmisc\nFunciones de utilidad desarrolladas por Frank E. Harrell\n\n\nggthemes\nTemas adicionales para personalizar gráficos con ggplot2\n\n\nggstatsplot\nCreación de gráficas preapradas para publicaciones científicas\n\n\npatchwork\nComposición sencilla de varios gráficos con ggplot2 en la misma imagen\n\n\nGGally\nHerramientas adicionales que extienden la funcionalidad de ggplot2\n\n\nggpubr\nCreación de gráficas de calidad para publicación científica\n\n\nggfortify\nHerramientas de visualización para diagnóstico de modelos. Cuidado: puede tener interacciones problemáticas con otros paquetes\n\n\nfaraway\nFunciones y datos para los libros publicados por Julian J. Faraway\n\n\ntsibble\nSoporte para datos de series temporales compatible con el Tidyverse\n\n\nfeasts\nFunciones adicionales para extracción de features y estadísticas en series temporales\n\n\nclimaemet\nConector para obtención de datos de la API pública de AEMET\n\n\nsf\nSoporte para manipulación y representación de objetos representados con el estándar simple features\n\n\nmapview\nCreación de gráficos espaciales intereactivos en R",
+    "crumbs": [
+      "Apéndices",
+      "<span class='chapter-number'>B</span>  <span class='chapter-title'>Paquetes R y atribuciones</span>"
+    ]
+  },
+  {
+    "objectID": "B-packages.html#atribución-de-imágenes-e-iconos",
+    "href": "B-packages.html#atribución-de-imágenes-e-iconos",
+    "title": "Apéndice B — Paquetes R y atribuciones",
+    "section": "B.2 Atribución de imágenes e iconos",
+    "text": "B.2 Atribución de imágenes e iconos\nTodas las imágenes utilizadas de fuentes externas reciben atribución junto a su aparición en los contenidos de este taller.",
+    "crumbs": [
+      "Apéndices",
+      "<span class='chapter-number'>B</span>  <span class='chapter-title'>Paquetes R y atribuciones</span>"
+    ]
+  }
+]
