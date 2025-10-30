@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>1&nbsp; Introducción – taller-visual-datos-espaciales-R</title>
+<title>1&nbsp; Introducción – Visualización de datos espaciales con R</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -117,7 +117,7 @@ div.csl-indent {
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
-      <a href="./">taller-visual-datos-espaciales-R</a> 
+      <a href="./">Visualización de datos espaciales con R</a> 
     </div>
       </div>
         <div class="mt-2 flex-shrink-0 align-items-center">
@@ -254,8 +254,16 @@ div.csl-indent {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Tabla de contenidos</h2>
+   
+  <ul>
+  <li><a href="#tipos-de-datos-espaciales" id="toc-tipos-de-datos-espaciales" class="nav-link active" data-scroll-target="#tipos-de-datos-espaciales"><span class="header-section-number">1.1</span> Tipos de datos espaciales</a></li>
+  <li><a href="#estadística-para-datos-espaciales" id="toc-estadística-para-datos-espaciales" class="nav-link" data-scroll-target="#estadística-para-datos-espaciales"><span class="header-section-number">1.2</span> Estadística para datos espaciales</a></li>
+  <li><a href="#r-y-su-ecosistema" id="toc-r-y-su-ecosistema" class="nav-link" data-scroll-target="#r-y-su-ecosistema"><span class="header-section-number">1.3</span> R y su ecosistema</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -279,15 +287,64 @@ div.csl-indent {
 </header>
 
 
-<p>This is a book created from markdown and executable code.</p>
-<p>See <span class="citation" data-cites="knuth84">Knuth (<a href="references.html#ref-knuth84" role="doc-biblioref">1984</a>)</span> for additional discussion of literate programming.</p>
+<section id="tipos-de-datos-espaciales" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="tipos-de-datos-espaciales"><span class="header-section-number">1.1</span> Tipos de datos espaciales</h2>
+<p>Los <strong>datos espaciales</strong> son aquellos que incluyen cualquier tipo de información que determine una ubicación asociada a una muestra. Un buen ejemplo son las coordenadas de latitud y longitud, que se pueden registrar gracias a la proliferación de dispositivos equipados con GPS. Otros ejemplos serían datos recogidos por provincias en un país o muestras recogidas en una explotación agrícola, dividida previamente en cuadrículas a intervalos regulares para tomar datos en cada sección.</p>
+<p>Según la clasificación ofrecida por <span class="citation" data-cites="Cressie1993">Cressie (<a href="references.html#ref-Cressie1993" role="doc-biblioref">1993</a>)</span>, podemos distinguir tres tipos principales de datos espaciales:</p>
+<ul>
+<li><strong>Datos geoestadísticos</strong> (<em>geostatistical data</em>): datos espaciales cuya variación se produce sobre un espacio continuo. La variable de interés (respuesta) puede ser discreta o continua. Algunos ejemplos son:
+<ul>
+<li>Niveles de polución en diferentes zonas de una ciudad.</li>
+<li>Niveles de ozono medidos en una determinada zona geográfica.</li>
+<li>Precipitación registrada en un territorio durante una jornada.</li>
+</ul></li>
+<li><strong>Malla de datos</strong> (<em>lattice data</em>): en este caso, la variación se produce sobre un dominio discreto, por lo que los datos solo pueden ocurrir en un conjunto fijo de localizaciones que se pueden enumerar. En la mayoría de casos, se trata de datos agregados sobre áreas o regiones. Ejemplos:
+<ul>
+<li>Regiones censales.</li>
+<li>Códigos postales.</li>
+<li>Barrios o distritos.</li>
+<li>Condados, provincias.</li>
+</ul></li>
+<li><strong>Patrones puntuales</strong> (<em>point pattern data</em>): La variable de interés es la localización de eventos que se producen en ubicaciones específicas, sobre un espacio discreto o continuo. Un ejemplo sería la posición de los incendios forestales producidos durante un año en una provincia española. El objetivo más común es determinar si las realizaciones del evento de interés siguen algún patrón dentro del área de estudio o son aleatorias. Más concretamente:
+<ul>
+<li>Si las ubicaciones de los eventos son completamente aleatorias (las posiciones de los eventos no afectan a las de otros eventos).</li>
+<li>Si las ubicaciones son uniformes o regulares (cada evento está lo más alejado posible de los eventos vecinos).</li>
+<li>Si las ubicaciones están agregadas o forman <em>clusters</em> (los eventos tienden a agruparse en ciertas localizaciones).</li>
+</ul></li>
+</ul>
+<p>Además de los datos con dependencias espaciales, en la actualidad surgen también muchos estudios que involucran <strong>datos espacio-temporales</strong>. En este tipo de datos, las variables observadas tienen simultáneamente tanto dependencia espacial como temporal. Un ejemplo sería la concentración de agentes contaminantes en diferentes zonas de una ciudad, medida diariamente a lo largo de un año.</p>
+</section>
+<section id="estadística-para-datos-espaciales" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="estadística-para-datos-espaciales"><span class="header-section-number">1.2</span> Estadística para datos espaciales</h2>
+<p>Cuando los datos recogidos poseen dependencias estrictas (espaciales, temporales, o espacio-temporales), no podemos utilizar técnicas estadísticas convencionales para analizarlos. En efecto, las herramientas de estadística clásica exigen, como condición indispensable, que exista independencia entre los valores observados. Esta norma claramente no se cumple para datos con dependencias. Por ejemplo, en el caso de datos espaciales es muy común que exista alguna relación entre muestras recogidas en ubicaciones cercanas entre sí.</p>
+</section>
+<section id="r-y-su-ecosistema" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="r-y-su-ecosistema"><span class="header-section-number">1.3</span> R y su ecosistema</h2>
+<p>El análisis estadístico de datos es una tarea fundamental en la transformación digital de las empresas y organizaciones. Siempre ha estado ahí, pero en la actualidad la disponibilidad de datos, la cantidad de los mismos, y la velocidad con la que se requieren resultados, está haciendo necesario el capacitar a los profesionales para el análisis de datos con nuevas herramientas. Nuevas tendencias (muchas veces malinterpretadas) como <em>Big Data</em>, Industria 4.0, <em>Internet of Things</em> (IoT), o <em>Data Science</em>, aumentan el interés por parte de las empresas, los profesionales y los investigadores en estas técnicas.</p>
+<p>El tratamiento de datos y su análisis requiere el uso de software avanzado. Aunque algunas tareas se puede realizar eficazmente con programas de hoja de cálculo como Excel (por ejemplo, son una buena herramienta para mecanizar y almacenar datos), se debería utilizar software especializado para el análisis de datos. Existen distintos paquetes estadísticos comerciales, como SPSS, Statgraphics, Stata, JMP o Minitab (líder en análisis de datos para metodologías de calidad). En los últimos años se ha abierto camino como alternativa el <a href="http://www.r-project.org">software estadístico y lenguaje de programación <strong>R</strong></a> <span class="citation" data-cites="R-base">(<a href="references.html#ref-R-base" role="doc-biblioref">R Core Team, 2025</a>)</span>. Hay otras alternativas que en su mayoría, o son parciales referidas a un ámbito concreto, o son más lenguajes de programación que software estadístico, como Python. R es software libre, pero su gratuidad solo es una de sus ventajas (free as in <em>free beer</em>, and free as in <em>free speech</em>), como se verá a lo largo del curso. El gran inconveniente es la curva de aprendizaje: no es tan fácil de aprender y usar como un software de ventanas, ya que el uso de R se basa en expresiones que hay que ejecutar desde scripts. No obstante, una vez que se tienen las nociones básicas es fácil ir aplicando nuevos métodos.</p>
+<p>R es un sistema para <strong>computación estadística</strong>: software de <strong>análisis de datos</strong> y <strong>lenguaje de programación</strong>. Ha sido ampliamente utilizado en investigación y docencia, y actualmente también en las empresas y organismos públicos. Es la evolución del trabajo de los laboratorios Bell con el lenguaje S <span class="citation" data-cites="venables2002modern">(<a href="references.html#ref-venables2002modern" role="doc-biblioref">Venables &amp; Ripley, 2002</a>)</span>, llevado al mundo del software libre por Ross Ihaka y Robert Gentleman en los años 90 <span class="citation" data-cites="ihaka1996r">(<a href="references.html#ref-ihaka1996r" role="doc-biblioref">Ihaka &amp; Gentleman, 1996</a>)</span>. La version R 1.0.0 se publicó el 29 de febrero de 2000.</p>
+<p>En R tenemos numerosos paquetes para representar información geográfica que nos permiten realizar la lectura y escritura de este tipo de datos, llevar a cabo análisis de patrones de puntos y operaciones geoestadísticas. Básicamente existen dos mecanismos para trabajar con datos espaciales:</p>
+<ul>
+<li><p><strong>Vectores</strong>. En este modelo, el mundo real se representa mediante <strong>puntos</strong>, <strong>líneas</strong>, <strong>polígonos</strong> y <strong>combinaciones</strong> de todos ellos. Por lo que la información se define mediante pares o ternas de valores. Es decir, los datos vectoriales describen la forma de un objeto y también pueden incluir variables adicionales. Por ejemplo, un conjunto de datos vectoriales puede ser la frontera de las comunidades autónomas de España y, además, puede contener información como el nombre de la comunidad autónoma y su número de habitantes. Este modelo es muy utilizado en el campo de las ciencias sociales porque la información con la que se trabaja tiende a tener fronteras muy bien definidas.</p></li>
+<li><p><strong>Ráster</strong>. Este modelo organiza el espacio como una <strong>matriz de celdas</strong> de igual tamaño. En cada celda se guarda la información correspondiente a ella. Es decir, cada celda contiene la información de los objetos que están en ella. Se trabaja por <strong>capas</strong>, agregando características espaciales a una resolución determinada, por lo que resulta muy útil para representar <strong>información continua</strong> a lo largo de un área. Este modelo es muy utilizado en la cartografía web, en la fotografía aérea y en los dispositivos de teledetección basados en satélites. Por este motivo, en el ámbito de las ciencias ambientales se usa más la filosofía ráster.</p></li>
+</ul>
 
 
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list" style="display: none">
-<div id="ref-knuth84" class="csl-entry" role="listitem">
-Knuth, D. E. (1984). Literate Programming. <em>Comput. J.</em>, <em>27</em>(2), 97-111. <a href="https://doi.org/10.1093/comjnl/27.2.97">https://doi.org/10.1093/comjnl/27.2.97</a>
+<div id="ref-Cressie1993" class="csl-entry" role="listitem">
+Cressie, N. A. C. (1993). <em>Statistics for Spatial Data. Revised Edition</em>. Wiley. <a href="https://doi.org/10.1002/9781119115151">https://doi.org/10.1002/9781119115151</a>
+</div>
+<div id="ref-ihaka1996r" class="csl-entry" role="listitem">
+Ihaka, R., &amp; Gentleman, R. (1996). R: a language for data analysis and graphics. <em>Journal of computational and graphical statistics</em>, <em>5</em>(3), 299-314.
+</div>
+<div id="ref-R-base" class="csl-entry" role="listitem">
+R Core Team. (2025). <em>R: A Language and Environment for Statistical Computing</em>. R Foundation for Statistical Computing. <a href="https://www.R-project.org/">https://www.R-project.org/</a>
+</div>
+<div id="ref-venables2002modern" class="csl-entry" role="listitem">
+Venables, W. N., &amp; Ripley, B. D. (2002). <em>Modern applied statistics with S</em>. Springer.
 </div>
 </div>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
