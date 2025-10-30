@@ -1,5 +1,18 @@
 # Datos espaciales
 
+En lo que resta del taller, vamos a utilizar (entre otros) los paquetes que cargamos a continuación. Asegúrate de tenerlos instalados antes de continuar con la ejecución del código. Nótese que el paquete {spDataLarge} hay que instalarlo desde un repositorio específico como se indica en la línea comentada. ^[El resto se pueden instalar desde CRAN usando el panel _Packages_ de RStudio o la función `install.packages` con el repositorio por defecto. Algunos paquetes tienen muchas dependencias y pueden tardar. Si después de la instalación alguno de los paquetes no se carga, comprueba que en la instalación no se produjeron errores.]
+
+```{r, echo=TRUE, message=FALSE}
+library(sf)
+library("rnaturalearth")
+library(tidyverse) # Carga, entre otros, ggplot2 y dplyr
+library(spData)
+# install.packages("spDataLarge", repos = "https://nowosad.r-universe.dev")
+library(spDataLarge)
+library(terra)
+```
+
+
 ## El paquete {sf}
 
 ### Introdución
