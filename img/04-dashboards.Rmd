@@ -1,4 +1,28 @@
-# Dashboards
+---
+editor_options:
+  chunk_output_type: console
+---
+<!-- ```{block, echo=FALSE} -->
+<!-- title: "Las bases de R" -->
+<!-- ``` -->
+
+```{r, echo=FALSE}
+screenshots <- FALSE
+if (screenshots) fechascreenshots <- Sys.Date() else fechascreenshots <- "2021-12-10"
+```
+
+
+# Creación de dashboards con datos espaciales
+
+```{block2, type='rmdobjetivos'}
+En esta unidad...
+
+- Tendrás una visión general del paquete fleshdasboard de R
+- Así como un repaso de RMarkdown
+- Verás la forma de estructurar un dashboard
+- Conocerás los componentes básicos para crear un dashboard
+
+```
 
 ## Introducción
 
@@ -10,15 +34,104 @@ Dentro de un dashboard podemos incluir una gran **variedad de elementos**, como:
 
 También podemos hacer un **dashboard dinámico**, es decir, que cambie de acuerdo con la interacción del usuario, usando Shiny (https://rmarkdown.rstudio.com/flexdashboard/shiny.html). Por lo tanto, los paquetes `Shiny` y `flexdashboard` son perfectamente compatibles. Al combinar estos paquetes, podemos añadir varios inputs reactivos en nuestro dashboard y mostrar resultados diferentes según la interacción del usuario. De este modo, convertimos un documento estático de R Markdown en un documento interactivo. Pero, al igual que ocurre con las aplicaciones Shiny, vamos a necesitar un servidor Shiny para compartirlos. Sin embargo, los documentos estáticos R Markdown son páginas web independientes que pueden abrirse en cualquier servidor web estándar. En la documentación oficial de dashboard, podéis encontrar un epígrafe completo sobre como llevar a cabo esta combinación.
 
+
+## RMarkdown. Conceptos previos
+
+### Programación literaria
+
+El nombre R Markdown hace referencia a la combinación de tecnologías que hace
+posible la programación literaria en R:
+
+- Por un lado, el propio lenguaje de programación R que nos permite procesar
+y analizar nuestros datos, creando modelos, tablas, resultados y figuras. En R
+escribimos la parte *ejecutable* de nuestro documento, en secciones especiales
+que llamamos **chunks**, y que están marcadas de una forma específica.
+
+```{r chunk, echo=TRUE}
+# Esto es un chunk
+```
+
+- Por otro lado, el lenguaje de marcado *Markdown* (https://en.wikipedia.org/wiki/Markdown),
+similar a HTML pero con una sintaxis mucho más sencilla, que usa símbolos
+de texto plano en lugar de etiquetas para marcar el contenido. La idea es
+que podamos escribir más rápidamente el marcado del contenido y otra herramienta
+traduzca nuestra sintaxis de marcado en código HTML (que pueda mostrarse
+en un navegador web) o en otros formatos (PDF o MS Word, por ejemplo).
+
+En la figura \@ref(fig:esquema-rmarkdown) podemos ver el esquema de trabajo
+que nos brinda R Markdown y su conjunto de paquetes y funciones asociados.
+Como principal ventaja,	un único archivo **centraliza** la explicación, dependencias 
+software, código de preparación y análisis de datos. Se integran resultados 
+numéricos y de visualización. Podemos elegir entre tres formatos de salida:
+HTML, PDF o MS Word.
+
+```{r esquema-rmarkdown, echo=FALSE, out.width = "100%", out.extra='style="padding:50px; display: inline-block;"', fig.cap="Esquema del flujo de trabajo típico con RMarkdown."}
+# Controlamos tamaño de la figura
+knitr::include_graphics("img/rmarkdown-workflow.png")
+```
+
+En el caso de R Markdown, el software conversor del archivo Markdown que producimos
+(con extensión `.Rmd`) al formato de salida elegido es **Pandoc** (https://pandoc.org/MANUAL.html).
+
+En un archivo Markdown podemos encontrar tres tipos de elementos:
+
+- los **metadatos**: es la información que se incluye al inicio del archivo, entre los tres guiones `` --- ``. Su sintáxis es YAML e indica como se debe generar el archivo resultante.
+- el **texto**: se escribe de acuerdo con la sintaxis Markdown
+- y **código**: normalmente, se incluye en los **chunks**. También podemos escribir código en línea con el texto comenzando la expresión con `` `r`` y terminando con `` ` ``. Estos fragementos de código pueden producir salidas de tipo texto, tablas o gráficos, sobre las cuales se tiene un control absoluto mediante diferentes opciones. Por ejemplo: podemos ocultar el código y mostrar solo la salida, podemos no ejecutar un fragemento de código, la visualización de un chunk puede estar controlada por el valor de una variable definida en un chunk anterior, etc. (https://yihui.name/knitr/options). Con **knitr** también se pueden configurar numerosas opciones (https://yihui.org/knitr/), muy útiles para incluir imángenes y tablas. En R Markdown también se admiten otros muchos lenguajes como Python, Julia, C ++ y SQL, lo cual es posible gracias al paquete knitr (proporciona motores para diversos lenguajes).
+ 
+
+### Sintaxis
+
+Como es habitual, RStudio proporciona una completa documentación de todas sus creaciones
+más destacadas, y R Markdown no es una excepción. Concretamente, podemos encontrar dos
+referencias imporantes para aprender la sintaxis de R Markdown:
+
+- [R Markdown Reference Guide](https://rmarkdown.rstudio.com/): recoge toda la sintaxis de R Markdown para el contenido escrito, así como todas las posibles opciones disponibles para configurar los *chunks* de código en R (u otros lenguajes, también soportados).
+- [R Markdown Cheat Sheet](https://rstudio.com/resources/cheatsheets/): resume los principales comandos y pasos a seguir para
+crear documentos con R Markdown, RStudio y sus paquetes adicionales.
+
+El tutorial ["Getting Started with R Markdown"](https://rmarkdown.rstudio.com/lesson-1.html) de RStudio es un buen punto de partida para familiarizarnos lo antes posible con esta tecnología.
+
+A continuación haremos un resumen de las opciones más usadas:
+
+- Resltar texto en línea: ```**negrita**```, ```*cursiva*```
+- Títulos y encabezados:
+
+  - Encabezado de nivel 1: ```#```
+  - Encabezado de nivel 2: ```##```
+  - Encabezado de nivel 3: ```###```
+  - Encabezado no numerado: ```# Encabezado {-}```.
+
+- Listas: ```*```, ```-```, ```+```
+- Listas numeradas: ```1```
+- Ecuaciones matemáticas: ```$$```
+
+ 
+### Salidas
+Como resultado, con R Markdown podemos obtener un documento o una presentación, siendo todos los formatos posibles los que se muestrna en la siguiente figura:
+```{r output-format, echo=FALSE, out.width = "80%", out.extra='style="padding:50px; display: inline-block;"', fig.cap="Formatos disponibles."}
+knitr::include_graphics("img/output-format.png")
+```
+
+Cuando tengamos varias opciones en el formato de salida de un archivo R Markdown, podremos verlas en el menú desplegable de Knit, como se muestra en la siguiente figura. De este modo podremos elegir el formato de salida concreto que queremos en cada momento. Si directamente hacemos click sobre ` knit `, cogerá la opción por defecto (aquella que hayamos indicado como primera opción en los metadatos).
+```{r knit-menu, echo=FALSE, out.width = "60%", out.extra='style="padding:50px; display: inline-block;"', fig.cap="Menú desplegable knit."}
+knitr::include_graphics("img/knit-menu.png")
+```
+
+Cada uno de los posibles formatos de salida están implementados como una función en R. De manera que podemos **personalizar la salida** mediante los argumentos de esa función. Podemos consultar los argumentos de cualquier formato mediante la ayuda de R: ``` ?beamer_presentation ```.
+
+
 ## El paquete `flexdashboard`
 
-El paquete **flexdashboard** nos permite realizar *dashboard*. Para crear un *dashboard* con R Markdown tenemos que indicar en los metadatos el formato de salida del siguiente modo: ```output: flexdashboard :: flex_dashboard```. Otra alternativa es, a través del menú File, seleccionamos R Markdown y, en la ventana emergente, dentro de Templates podremos encontrar la opción Flex Dashboard como se muestra en la  @fig-RM-window.
+El paquete **flexdashboard** nos permite realizar *dashboard*. Para crear un *dashboard* con R Markdown tenemos que indicar en los metadatos el formato de salida del siguiente modo: ```output: flexdashboard :: flex_dashboard```. Otra alternativa es, a través del menú File, seleccionamos R Markdown y, en la ventan emergente, dentro de Templates podremos encontrar la opción Flex Dashboard como se muestra en la Figura \@ref(fig:RM-window).
+```{r RM-window, echo=FALSE, out.width = "100%", fig.cap="New R Markdown window."}
+knitr::include_graphics("img/RMarkdown_window.png")
+```
 
-![Nueva ventana en R Markdown.](img/RMarkdown_window.png){#fig-RM-window}
-
-Como resultado aparecerá una plantilla para crear nuestro `dashboard`, @fig-template.
-
-![Plantilla para un dashboard.](img/template.png){#fig-template}
+Como resultado aparecerá una plantilla para crear nuestro `dashboard`, Figura \@ref(fig:template)
+```{r template, echo=FALSE, out.width = "100%", fig.cap="Plantilla para un dashboard."}
+knitr::include_graphics("img/template.png")
+```
 
 Los *dashboard* comparten muchas características con los documentos HTML, como son las opciones de configuración de figuras, la apariencia y estilo del documento y ecuaciones matemáticas. 
 
@@ -30,10 +143,11 @@ La configuración general del diseño de un *dashboard* se hace con los títulos
 
 El texto de los títulos de segundo nivel no se muestran en la salida. Sin embargo, los de primer y tercer nivel si se muestran como títulos. Veamos algunos ejemplos de estructuras de dashboard:
 
-- Un ejemplo de estructura de una página con dos cuadros se muestra en la @fig-1col-struct:
+- Ejemplo de estructura de una página con dos cuadros \@ref(fig:layout-1colum):
 
-![Estructura de una columna.](img/layout_1colum.png){#fig-1col-struct}
-
+```{r layout-1colum, echo=FALSE, fig.cap="Estructura de una columna"}
+knitr::include_graphics("img/layout_1colum.png")
+```
 
 ```
 # Page 1
@@ -97,15 +211,18 @@ Los gráficos basados en htmlwidgets son ideales para usar con `flexdashboard` p
 - `Highcharter`, una rica interfaz R para la popular biblioteca de gráficos JavaScript Highcharts. 
 - `visNetwork`, una interfaz para las capacidades de visualización de red de la biblioteca vis.js.
 
-![Ejemplo de un HTML widget creado con leaflet.](img/code_leaflet.png){#fig-code-leaflet}
-
+```{r code-leaflet, out.width="100%", echo=FALSE, fig.cap="Ejemplo de un HTML widget creado con leaflet"}
+knitr::include_graphics("img/code_leaflet.png")
+```
 
 **Gráficas de R**. 
 Podemos incluir cualquier tipo de gráfico estándar de R en un `dashboard`. 
 
 Si estamos trabajando con un `dashboard` dinámico, estos gráficos se dimensionan automáticamente para caber dentro de los contenedores siempre y cuando su código se encuentre dentro de una llamada a `renderPlot`. Sin embargo, si nuestro dashboard es estático, como estos gráficos son imágenes PNG, puede haber algún problema a la hora de llenar los límites del contenedor en el que se encuentre. En estos casos, una buena práctica de diseño es definir en el `knitr` los valores de `fig.width` y `fig.height` lo más cerca posible de lo que realmente estarán en la página, así el tamaño renderizado de la gráfica se ajustará lo más posible a su contenedor. 
 
-![Ejemplo de gráficos estándar de R.](img/code_Rgraphs.png){#fig-code-Rgraphs}
+```{r code-Rgraphs, out.width="100%", echo=FALSE, fig.cap="Ejemplo de gráficos estándar de R."}
+knitr::include_graphics("img/code_Rgraphs.png")
+```
 
 **Datos tabulados**. 
 Podemos incluir tablas simples y objetos `DataTable`. Las **tablas simples** son ideales para cantidades pequeñas de registros. Dentro de un `dashboard` estático, incluiremos el código `knitr :: kable` para añadir una tabla simple. Para un `dashboard` dinámico usaremos la función `renderTable` dentro de la sección `render` para asegurarnos de que la visualización se actualice cuando cambien las entradas de las que depende.
@@ -114,7 +231,9 @@ El paquete `DT` nos permite mostrar matrices o marcos de datos como **tablas HTM
 
 También es posible incluir un objeto `DataTable` dentro de un `Shiny flexdashboard`, solo tendremos que incluir la salida de la tabla de datos en `DT::renderDataTable` para que se actualice cuando cambién las entradas de las que depende.
 
-![Ejemplo de datos tabulados.](img/code_DT.png){#fig-code-DT}
+```{r code-DT, out.width="100%", echo=FALSE, fig.cap="Ejemplo de datos tabulados."}
+knitr::include_graphics("img/code_DT.png")
+```
 
 **Cajas de valores**. 
 Las cajas de valores nos permiente visualizar **valores simples**. Mediante la función `valueBox` podemos crear estos elementos junto con un título y un icono. El icono se lo pasamos mediante el argumento `icon`. También es posible cambiar el color de fondo mediante el argumento `color`. Tenemos varias opciones para el color: `primary` (valor por defecto), `info`, `success`, `warning` y `danger`, incluso podemos definir el color con un CSS válido (por ejemplo, "#ffffff", "rgb (100,100,100)", etc.).
@@ -125,15 +244,18 @@ En cuanto a los iconos, podemos usar tres tipos diferentes: Font Awesome, Ionico
 
 Por supuesto, también podemos incluir un `valueBox` dentro de un `Shiny dashboard` incluyendo el `valueBox` dentro de `renderValueBox`. 
 
-![Ejemplo de cajas de valores.](img/code_valueBoxes.png){#fig-code-valueBoxes}
+```{r code-valueBoxes, out.width="100%", echo=FALSE, fig.cap="Ejemplo de cajas de valores."}
+knitr::include_graphics("img/code_valueBoxes.png")
+```
 
 **Gauges**. 
 Los Gauges son valores que se visualizan en **cajas** junto con un **arco de medida**. La función `gauge` necesita obligatoriamente los argumentos `value`, `min` y `max`. Podemos especificar un símbolo opcional para que se muestre junto al valor, por ejemplo, "%". Si definimos rangos de valores mediante la función `gaugeSectors` nuestro sector se pintará de un color u otro en función de su valor. Los rangos de valores son: `success`, `warning` y `danger`.
 
 Al igual que ocurría con los `valueBox`, si el valor que representamos en un `Gauge` está disponible en otra página de nuestro `dashboard`, podemos **enlazarlo**.
 
-![Ejemplo de indicadores.](img/code_gauges.png){#fig-code-gauges}
-
+```{r code-gauges, out.width="100%", echo=FALSE, fig.cap="Ejemplo de indicadores."}
+knitr::include_graphics("img/code_gauges.png")
+```
 
 **Barra de navegación**
 Por defecto, en la barra de navegación del `dashboard` se incluye el título, el autor y la fecha del documento. Si el `dashboard` tiene varias páginas, también se incluyen sus enlaces en el lado izquierdo de la barra de navegación. 
@@ -143,8 +265,9 @@ Mediante la opción `social` podemos incluir enlaces a alguna de las siguientes 
 
 Para incluir un **enlace al código fuente** tenemos la opción `source_code`. Si indicamos `source_code: embed`, el código fuente se incrustará dentro del documento. Mientras que si indicamos `source_code: direccion_web` estaremos inlcuyendo un enlace a una URL donde estará el código fuente, por ejemplo, `source_code: "https://github.com/ChusAlgar/repo"`. 
 
-![Ejemplo de configuración de la barra de navegación.](img/code_navbar.png){#fig-code-navbar}
-
+```{r code-navbar, out.width="100%", echo=FALSE, fig.cap="Ejemplo de configuración de la barra de navegación."}
+knitr::include_graphics("img/code_navbar.png")
+```
 
 **Animaciones de texto**. 
 En ocasiones es necesario incluir alguna **explicación** adicional dentro del `dashboard`, por ejemplo, mediante una **sección** cuyo contenido sea el texto de la explicaicón (en lugar de un gráfico). Otra forma de hacerlo es incluir esa explicación en la **parte superior**, antes de empezar hacer las secciones del `dashboard`. Esta opción puede resultar interesante para incluir una breve descripción del contenido del `dashboard`.
@@ -156,15 +279,15 @@ En ocasiones es necesario incluir alguna **explicación** adicional dentro del `
 
 En este primer `dashboard` mostramos como organizar diferentes elementos dentro de un `dashboard` de varias páginas con diferente *layout*. El objetivo es mostrar una recopilación de los principales tipo de componentes que se han explicado en la sección anterior.
 
-En la Figura @fig-components-tab1 se muestra la primera página del dashboard. Esta página está organizada en dos columnas, conteniendo cada una de ellas dos objetos. En la primera columna se ha creado un mapa estático con `ggplot2` y un mapa interactivo con `leaflet`. En la segunda columna se han incluido dos gráficos estándar de R, un histograma y un boxplot de una distribución normal.
+En la Figura \@ref(fig:components-tab1) se muestra la primera página del dashboard. Esta página está organizada en dos columnas, conteniendo cada una de ellas dos objetos. En la primera columna se ha creado un mapa estático con `ggplot2` y un mapa interactivo con `leaflet`. En la segunda columna se han incluido dos gráficos estándar de R, un histograma y un boxplot de una distribución normal.
+```{r components-tab1, echo=FALSE, fig.cap="Primera página del dashboard Components. Se disponen cuatro elementos diferentes organizados en dos columnas."}
+knitr::include_graphics("img/components_tab1.png")
+```
 
-![Primera página del dashboard Components. Se disponen cuatro elementos diferentes organizados en dos columnas.](img/components_tab1.png){#fig-components-tab1}
-
-
-En la Figura @fig-components-tab2 podemos ver que la segunda página del dashboard está organizada en filas, por lo que hemos tenido que cambiar su orientación explícitamente. En la primera fila hemos incluido una tabla de datos con `DateTable`, en la segunda fila se puede observar un ejemplo de `value boxes` y en la última fila tenemos un ejemplo de indicadores.
-
-![Segunda página del dashboard Components. Se disponen tres elementos diferentes organizados en tres filas.](img/components_tab2.png){#fig-components-tab2}
-
+En la Figura \@ref(fig:components-tab2) podemos ver que la segunda página del dashboard está organizada en filas, por lo que hemos tenido que cambiar su orientación explícitamente. En la primera fila hemos incluido una tabla de datos con `DateTable`, en la segunda fila se puede observar un ejemplo de `value boxes` y en la última fila tenemos un ejemplo de indicadores.
+```{r components-tab2, echo=FALSE, fig.cap="Segunda página del dashboard Components. Se disponen tres elementos diferentes organizados en tres filas."}
+knitr::include_graphics("img/components_tab2.png")
+```
 
 Además, en la barra de navegación se ha añadido un enlace al código fuente y otro a la documentación oficial de `flexdashboard`.
 
@@ -172,18 +295,19 @@ Además, en la barra de navegación se ha añadido un enlace al código fuente y
 
 Este `dashboard` muestra los niveles de contaminación del aire por partículas finas (PM2.5) en cada uno de los países del mundo en 2016. Los datos se han obtenido del Banco Mundial utilizando el paquete `wbstats` y el mapa mundial se obtiene del paquete `rnaturalearth`. 
 
-En la Figura @fig-mfdb-tab1 se presenta la primera página del dashboard en la que se ha incluido la representación de un mapa interactivo con leaflet y la visualización estática del histograma con `ggplot2`.
+En la Figura \@ref(fig:mfdb-tab1) se presenta la primera página del dashboard en la que se ha incluido la representación de un mapa interactivo con leaflet y la visualización estática del histograma con `ggplot2`. 
+```{r mfdb-tab1, echo=FALSE, fig.cap="My first dashboard contiene un mapa interactivo y un histograma"}
+knitr::include_graphics("img/mfdb_tab1.png")
+```
 
-![My first dashboard contiene un mapa interactivo y un histograma.](img/mfdb_tab1.png){#fig-mfdb-tab1}
-
-La Figura @fig-mfdb-tab2 muestra el dataset que se ha incluido mediante una tabla `DT` en la segunda página del dashboard.
-
-![La segunda página contiene el dataset.](img/mfdb_tab2.png){#fig-mfdb-tab2}
-
+La Figura \@ref(fig:mfdb-tab2) muestra el dataset que se ha incluido mediante una tabla `DT` en la segunda página del dashboard.
+```{r mfdb-tab2, echo=FALSE, fig.cap="La segunda página contiene el dataset."}
+knitr::include_graphics("img/mfdb_tab2.png")
+```
 
 ### BC Liquor Store Prices
 
-En este último ejemplo se muestra en un histograma el consumo de diferentes tipos de bebidas en Canadá, Francia e Italia. Al tratarse de un dashboard dinámica, en la Figura @fig-bc-liquore-store se pueden ver los distintos elementos con los que puede interactuar el usuario. Según el país, tipo de bebida y rango de precio, se mostrará su correspondiente histograma así como su tabla de valores.
-
-![Shiny Dashboard BC Liquiore Store.](img/bc-liquore-store.png){#fig-bc-liquore-store}
-
+En este último ejemplo se muestra en un histograma el consumo de diferentes tipos de bebidas en Canadá, Francia e Italia. Al tratarse de un dashboard dinámica, en la Figura \@ref(fig:bc-liquore-store) se pueden ver los distintos elementos con los que puede interactuar el usuario. Según el país, tipo de bebida y rango de precio, se mostrará su correspondiente histograma así como su tabla de valores.
+```{r bc-liquore-store, echo=FALSE, fig.cap="Shiny Dashboard BC Liquiore Store."}
+knitr::include_graphics("img/bc-liquore-store.png")
+```
