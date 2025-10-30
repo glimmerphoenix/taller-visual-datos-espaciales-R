@@ -20,27 +20,7 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-/* CSS for citations */
-div.csl-bib-body { }
-div.csl-entry {
-  clear: both;
-  margin-bottom: 0em;
-}
-.hanging-indent div.csl-entry {
-  margin-left:2em;
-  text-indent:-2em;
-}
-div.csl-left-margin {
-  min-width:2em;
-  float:left;
-}
-div.csl-right-inline {
-  margin-left:2em;
-  padding-left:1em;
-}
-div.csl-indent {
-  margin-left: 2em;
-}</style>
+</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -254,8 +234,24 @@ div.csl-indent {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Tabla de contenidos</h2>
+   
+  <ul>
+  <li><a href="#introducción" id="toc-introducción" class="nav-link active" data-scroll-target="#introducción"><span class="header-section-number">6.1</span> Introducción</a></li>
+  <li><a href="#el-paquete-flexdashboard" id="toc-el-paquete-flexdashboard" class="nav-link" data-scroll-target="#el-paquete-flexdashboard"><span class="header-section-number">6.2</span> El paquete <code>flexdashboard</code></a>
+  <ul class="collapse">
+  <li><a href="#componentes" id="toc-componentes" class="nav-link" data-scroll-target="#componentes"><span class="header-section-number">6.2.1</span> Componentes</a></li>
+  </ul></li>
+  <li><a href="#ejemplos." id="toc-ejemplos." class="nav-link" data-scroll-target="#ejemplos."><span class="header-section-number">6.3</span> Ejemplos.</a>
+  <ul class="collapse">
+  <li><a href="#components" id="toc-components" class="nav-link" data-scroll-target="#components"><span class="header-section-number">6.3.1</span> Components</a></li>
+  <li><a href="#niveles-de-poluciónen-2016-en-todo-el-mundo." id="toc-niveles-de-poluciónen-2016-en-todo-el-mundo." class="nav-link" data-scroll-target="#niveles-de-poluciónen-2016-en-todo-el-mundo."><span class="header-section-number">6.3.2</span> Niveles de poluciónen 2016 en todo el mundo.</a></li>
+  <li><a href="#bc-liquor-store-prices" id="toc-bc-liquor-store-prices" class="nav-link" data-scroll-target="#bc-liquor-store-prices"><span class="header-section-number">6.3.3</span> BC Liquor Store Prices</a></li>
+  </ul></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -279,15 +275,262 @@ div.csl-indent {
 </header>
 
 
-<p>This is a book created from markdown and executable code.</p>
-<p>See <span class="citation" data-cites="knuth84">Knuth (<a href="references.html#ref-knuth84" role="doc-biblioref">1984</a>)</span> for additional discussion of literate programming.</p>
+<section id="introducción" class="level2" data-number="6.1">
+<h2 data-number="6.1" class="anchored" data-anchor-id="introducción"><span class="header-section-number">6.1</span> Introducción</h2>
+<p>Un <em>dashboard</em> es una <strong>representación gráfica</strong> que muestra un resumen de los principales temas y aspectos que influyen en un proyecto o en un negocio. Está orientado a la toma de <strong>decisiones</strong> para optimizar la estrategia de negocio o el funcionamiento del proyecto. Nos permiten mostrar una gran cantidad de información de forma sencilla y visualmente atractiva. Por lo que, este tipo de documentos resultan muy comunes en el mundo empresarial.</p>
+<p>El paquete <code>flexdashboard</code> permite crear dashboard de manera que podamos ver varias visualizaciones de datos relacionadas y organizadas en una sola pantalla en formato HTML. El panel se crea utilizando <strong>R Markdown</strong> y su diseño está basado en <strong>filas y columnas ajustables</strong> y fáciles de especificar. Los componentes se redimensionan automáticamente para llenar todo el espacio del navegador y también se adaptan para su visualización en dispositivos móviles.</p>
+<p>Dentro de un dashboard podemos incluir una gran <strong>variedad de elementos</strong>, como: visualizaciones interactivas basdas en htmlwidgets, representaciones estándar de R, datos tabulados, cuadros de texto para resaltar información importante, incluso una barra de navegación. Podemos consultar la <a href="https://rmarkdown.rstudio.com/flexdashboard/">documentación oficial del paquete</a> para profundizar más en las múltiples opciones que nos ofrece.</p>
+<p>También podemos hacer un <strong>dashboard dinámico</strong>, es decir, que cambie de acuerdo con la interacción del usuario, usando Shiny (https://rmarkdown.rstudio.com/flexdashboard/shiny.html). Por lo tanto, los paquetes <code>Shiny</code> y <code>flexdashboard</code> son perfectamente compatibles. Al combinar estos paquetes, podemos añadir varios inputs reactivos en nuestro dashboard y mostrar resultados diferentes según la interacción del usuario. De este modo, convertimos un documento estático de R Markdown en un documento interactivo. Pero, al igual que ocurre con las aplicaciones Shiny, vamos a necesitar un servidor Shiny para compartirlos. Sin embargo, los documentos estáticos R Markdown son páginas web independientes que pueden abrirse en cualquier servidor web estándar. En la documentación oficial de dashboard, podéis encontrar un epígrafe completo sobre como llevar a cabo esta combinación.</p>
+</section>
+<section id="el-paquete-flexdashboard" class="level2" data-number="6.2">
+<h2 data-number="6.2" class="anchored" data-anchor-id="el-paquete-flexdashboard"><span class="header-section-number">6.2</span> El paquete <code>flexdashboard</code></h2>
+<p>El paquete <strong>flexdashboard</strong> nos permite realizar <em>dashboard</em>. Para crear un <em>dashboard</em> con R Markdown tenemos que indicar en los metadatos el formato de salida del siguiente modo: <code>output: flexdashboard :: flex_dashboard</code>. Otra alternativa es, a través del menú File, seleccionamos R Markdown y, en la ventana emergente, dentro de Templates podremos encontrar la opción Flex Dashboard como se muestra en la <a href="#fig-RM-window" class="quarto-xref">Figura&nbsp;<span>6.1</span></a>.</p>
+<div id="fig-RM-window" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-RM-window-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="img/RMarkdown_window.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-RM-window-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;6.1: Nueva ventana en R Markdown.
+</figcaption>
+</figure>
+</div>
+<p>Como resultado aparecerá una plantilla para crear nuestro <code>dashboard</code>, <a href="#fig-template" class="quarto-xref">Figura&nbsp;<span>6.2</span></a>.</p>
+<div id="fig-template" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-template-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="img/template.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-template-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;6.2: Plantilla para un dashboard.
+</figcaption>
+</figure>
+</div>
+<p>Los <em>dashboard</em> comparten muchas características con los documentos HTML, como son las opciones de configuración de figuras, la apariencia y estilo del documento y ecuaciones matemáticas.</p>
+<p>La configuración general del diseño de un <em>dashboard</em> se hace con los títulos del siguiente modo:</p>
+<ul>
+<li>Los títulos de primer nivel (#) definen una página nueva.</li>
+<li>Los títulos de segundo nivel (##) definen una columna (o una fila). Cuando definimos varias columnas dentro de una página, podemos especificar el ancho exacto de cada una de ellas:<code>Column {data-width=600}</code>. Por defecto, un dashboard será una única columna que ocupará todo el espacio del navegador.</li>
+<li>Los títulos de tercer nivel (###) definen un cuadro, que puede contener uno o más componentes. Estos cuadros se van colocando en vertical dentro de una columna (o fila).</li>
+</ul>
+<p>El texto de los títulos de segundo nivel no se muestran en la salida. Sin embargo, los de primer y tercer nivel si se muestran como títulos. Veamos algunos ejemplos de estructuras de dashboard:</p>
+<ul>
+<li>Un ejemplo de estructura de una página con dos cuadros se muestra en la <a href="#fig-1col-struct" class="quarto-xref">Figura&nbsp;<span>6.3</span></a>:</li>
+</ul>
+<div id="fig-1col-struct" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-1col-struct-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="img/layout_1colum.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-1col-struct-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;6.3: Estructura de una columna.
+</figcaption>
+</figure>
+</div>
+<pre><code># Page 1
+
+### Object1
+
+### Object2</code></pre>
+<ul>
+<li>Ejemplo de estructura general con varias páginas, cada una de ellas con distinto número de columnas:</li>
+</ul>
+<pre><code># Page 1
+
+Column1 {data-width=600}
+-------------------------------------
+
+### Object1-1
+
+### Object1-2
 
 
-<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list" style="display: none">
-<div id="ref-knuth84" class="csl-entry" role="listitem">
-Knuth, D. E. (1984). Literate Programming. <em>Comput. J.</em>, <em>27</em>(2), 97-111. <a href="https://doi.org/10.1093/comjnl/27.2.97">https://doi.org/10.1093/comjnl/27.2.97</a>
+Column2 {data-width=400}
+-------------------------------------
+
+### Object2-1
+
+
+# Page 2
+
+Column1 {data-width=600}
+-------------------------------------
+
+### Object2-1
+
+
+Column2 {data-width=400}
+-------------------------------------
+
+### Object2-1
+
+
+Column3 {data-width=400}
+-------------------------------------
+
+### Object2-1
+</code></pre>
+<section id="componentes" class="level3" data-number="6.2.1">
+<h3 data-number="6.2.1" class="anchored" data-anchor-id="componentes"><span class="header-section-number">6.2.1</span> Componentes</h3>
+<p>Veamos los distintos componentes que podemos añadir en un <code>dashboard</code>:</p>
+<p><strong>HTML widgets</strong>. Los gráficos basados en htmlwidgets son ideales para usar con <code>flexdashboard</code> porque pueden <strong>redimensionarse</strong> dinámicamente. Incluir htmlwidgets en un documento de R Markdown es tan sencillo como incluir cualquier otro gráficos de R, no hay más que llamar a la librería correspondiente. Los htmlwidgets que tenemos disponibles son:</p>
+<ul>
+<li><code>Leaflet</code>, una biblioteca para crear <strong>mapas dinámicos</strong> que admiten zoom-in y zoom-out, e incluir anotaciones como marcadores, polígonos y ventanas emergentes.</li>
+<li><code>dygraphs</code>, paquete que proporciona numerosas funciones para la creación de gráficos de datos de <strong>series temporales</strong> e incluye soporte para muchas funciones interactivas.</li>
+<li><code>Plotly</code>, es la versión interactiva de <code>ggplot2</code>.</li>
+<li><code>rbokeh</code>, una interfaz para Bokeh que permite crear gráficos basados ​​en web.</li>
+<li><code>Highcharter</code>, una rica interfaz R para la popular biblioteca de gráficos JavaScript Highcharts.</li>
+<li><code>visNetwork</code>, una interfaz para las capacidades de visualización de red de la biblioteca vis.js.</li>
+</ul>
+<div id="fig-code-leaflet" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-code-leaflet-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="img/code_leaflet.png" class="img-fluid figure-img">
 </div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-code-leaflet-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;6.4: Ejemplo de un HTML widget creado con leaflet.
+</figcaption>
+</figure>
 </div>
+<p><strong>Gráficas de R</strong>. Podemos incluir cualquier tipo de gráfico estándar de R en un <code>dashboard</code>.</p>
+<p>Si estamos trabajando con un <code>dashboard</code> dinámico, estos gráficos se dimensionan automáticamente para caber dentro de los contenedores siempre y cuando su código se encuentre dentro de una llamada a <code>renderPlot</code>. Sin embargo, si nuestro dashboard es estático, como estos gráficos son imágenes PNG, puede haber algún problema a la hora de llenar los límites del contenedor en el que se encuentre. En estos casos, una buena práctica de diseño es definir en el <code>knitr</code> los valores de <code>fig.width</code> y <code>fig.height</code> lo más cerca posible de lo que realmente estarán en la página, así el tamaño renderizado de la gráfica se ajustará lo más posible a su contenedor.</p>
+<div id="fig-code-Rgraphs" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-code-Rgraphs-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="img/code_Rgraphs.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-code-Rgraphs-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;6.5: Ejemplo de gráficos estándar de R.
+</figcaption>
+</figure>
+</div>
+<p><strong>Datos tabulados</strong>. Podemos incluir tablas simples y objetos <code>DataTable</code>. Las <strong>tablas simples</strong> son ideales para cantidades pequeñas de registros. Dentro de un <code>dashboard</code> estático, incluiremos el código <code>knitr :: kable</code> para añadir una tabla simple. Para un <code>dashboard</code> dinámico usaremos la función <code>renderTable</code> dentro de la sección <code>render</code> para asegurarnos de que la visualización se actualice cuando cambien las entradas de las que depende.</p>
+<p>El paquete <code>DT</code> nos permite mostrar matrices o marcos de datos como <strong>tablas HTML interactivas</strong> que admiten filtrado, paginación y clasificación. Para poder usar la función <code>datatable</code> de <code>DataTables</code> con <code>flexdashboard</code>, hay que instalar la última versión de DT (v0.2) de CRAN, ya que contiene algunos cambios necesarios para la compatibilidad con <code>flexdashboard</code>. Si estamos trabajando con un conjunto de datos pequeño, puede interesarnos desactivar la opción de paginación: <code>bPaginate = FALSE</code>, ya que en estos casos mediante el desplazamiento conseguimos navegar de forma muy cómoda a través de los datos. Sin embargo, si tenemos un conjunto de datos grande, deberemos habilitar la paginación y especificar la opción <code>pageLength</code> con el número de filas que queramos mostrar en cada página (el valor por defecto son 10 filas).</p>
+<p>También es posible incluir un objeto <code>DataTable</code> dentro de un <code>Shiny flexdashboard</code>, solo tendremos que incluir la salida de la tabla de datos en <code>DT::renderDataTable</code> para que se actualice cuando cambién las entradas de las que depende.</p>
+<div id="fig-code-DT" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-code-DT-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="img/code_DT.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-code-DT-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;6.6: Ejemplo de datos tabulados.
+</figcaption>
+</figure>
+</div>
+<p><strong>Cajas de valores</strong>. Las cajas de valores nos permiente visualizar <strong>valores simples</strong>. Mediante la función <code>valueBox</code> podemos crear estos elementos junto con un título y un icono. El icono se lo pasamos mediante el argumento <code>icon</code>. También es posible cambiar el color de fondo mediante el argumento <code>color</code>. Tenemos varias opciones para el color: <code>primary</code> (valor por defecto), <code>info</code>, <code>success</code>, <code>warning</code> y <code>danger</code>, incluso podemos definir el color con un CSS válido (por ejemplo, “#ffffff”, “rgb (100,100,100)”, etc.).</p>
+<p>Si el valor que queremos mostrar en un <code>valueBox</code> está relacionado con alguna de las páginas de nuestro <code>dashboard</code>, podemos <strong>vincularlo</strong>, mediante el argumento <code>href</code>, a esa página de manera que, cuando pichemos sobre él, nos lleve a la página deseada.</p>
+<p>En cuanto a los iconos, podemos usar tres tipos diferentes: Font Awesome, Ionicons o Bootstrap Glyphicons.</p>
+<p>Por supuesto, también podemos incluir un <code>valueBox</code> dentro de un <code>Shiny dashboard</code> incluyendo el <code>valueBox</code> dentro de <code>renderValueBox</code>.</p>
+<div id="fig-code-valueBoxes" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-code-valueBoxes-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="img/code_valueBoxes.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-code-valueBoxes-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;6.7: Ejemplo de cajas de valores.
+</figcaption>
+</figure>
+</div>
+<p><strong>Gauges</strong>. Los Gauges son valores que se visualizan en <strong>cajas</strong> junto con un <strong>arco de medida</strong>. La función <code>gauge</code> necesita obligatoriamente los argumentos <code>value</code>, <code>min</code> y <code>max</code>. Podemos especificar un símbolo opcional para que se muestre junto al valor, por ejemplo, “%”. Si definimos rangos de valores mediante la función <code>gaugeSectors</code> nuestro sector se pintará de un color u otro en función de su valor. Los rangos de valores son: <code>success</code>, <code>warning</code> y <code>danger</code>.</p>
+<p>Al igual que ocurría con los <code>valueBox</code>, si el valor que representamos en un <code>Gauge</code> está disponible en otra página de nuestro <code>dashboard</code>, podemos <strong>enlazarlo</strong>.</p>
+<div id="fig-code-gauges" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-code-gauges-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="img/code_gauges.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-code-gauges-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;6.8: Ejemplo de indicadores.
+</figcaption>
+</figure>
+</div>
+<p><strong>Barra de navegación</strong> Por defecto, en la barra de navegación del <code>dashboard</code> se incluye el título, el autor y la fecha del documento. Si el <code>dashboard</code> tiene varias páginas, también se incluyen sus enlaces en el lado izquierdo de la barra de navegación. Además, podemos personalizar enlaces a otros sitios web desde la barra de navegación mediante la opción <code>navbar</code>. Todos los elementos de la barra de navegación deben incluir un título o un icono (o ambos), junto con el <code>href</code> que indique cual es el destino de navegación. El campo de alineación es opcional, puede ser <code>left</code> o <code>right</code>, siendo este último el valor por defecto.</p>
+<p>Mediante la opción <code>social</code> podemos incluir enlaces a alguna de las siguientes redes sociales: facebook, twitter, google-plus, linkedin y pinterest.</p>
+<p>Para incluir un <strong>enlace al código fuente</strong> tenemos la opción <code>source_code</code>. Si indicamos <code>source_code: embed</code>, el código fuente se incrustará dentro del documento. Mientras que si indicamos <code>source_code: direccion_web</code> estaremos inlcuyendo un enlace a una URL donde estará el código fuente, por ejemplo, <code>source_code: "https://github.com/ChusAlgar/repo"</code>.</p>
+<div id="fig-code-navbar" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-code-navbar-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="img/code_navbar.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-code-navbar-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;6.9: Ejemplo de configuración de la barra de navegación.
+</figcaption>
+</figure>
+</div>
+<p><strong>Animaciones de texto</strong>. En ocasiones es necesario incluir alguna <strong>explicación</strong> adicional dentro del <code>dashboard</code>, por ejemplo, mediante una <strong>sección</strong> cuyo contenido sea el texto de la explicaicón (en lugar de un gráfico). Otra forma de hacerlo es incluir esa explicación en la <strong>parte superior</strong>, antes de empezar hacer las secciones del <code>dashboard</code>. Esta opción puede resultar interesante para incluir una breve descripción del contenido del <code>dashboard</code>.</p>
+</section>
+</section>
+<section id="ejemplos." class="level2" data-number="6.3">
+<h2 data-number="6.3" class="anchored" data-anchor-id="ejemplos."><span class="header-section-number">6.3</span> Ejemplos.</h2>
+<section id="components" class="level3" data-number="6.3.1">
+<h3 data-number="6.3.1" class="anchored" data-anchor-id="components"><span class="header-section-number">6.3.1</span> Components</h3>
+<p>En este primer <code>dashboard</code> mostramos como organizar diferentes elementos dentro de un <code>dashboard</code> de varias páginas con diferente <em>layout</em>. El objetivo es mostrar una recopilación de los principales tipo de componentes que se han explicado en la sección anterior.</p>
+<p>En la Figura <a href="#fig-components-tab1" class="quarto-xref">Figura&nbsp;<span>6.10</span></a> se muestra la primera página del dashboard. Esta página está organizada en dos columnas, conteniendo cada una de ellas dos objetos. En la primera columna se ha creado un mapa estático con <code>ggplot2</code> y un mapa interactivo con <code>leaflet</code>. En la segunda columna se han incluido dos gráficos estándar de R, un histograma y un boxplot de una distribución normal.</p>
+<div id="fig-components-tab1" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-components-tab1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="img/components_tab1.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-components-tab1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;6.10: Primera página del dashboard Components. Se disponen cuatro elementos diferentes organizados en dos columnas.
+</figcaption>
+</figure>
+</div>
+<p>En la Figura <a href="#fig-components-tab2" class="quarto-xref">Figura&nbsp;<span>6.11</span></a> podemos ver que la segunda página del dashboard está organizada en filas, por lo que hemos tenido que cambiar su orientación explícitamente. En la primera fila hemos incluido una tabla de datos con <code>DateTable</code>, en la segunda fila se puede observar un ejemplo de <code>value boxes</code> y en la última fila tenemos un ejemplo de indicadores.</p>
+<div id="fig-components-tab2" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-components-tab2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="img/components_tab2.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-components-tab2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;6.11: Segunda página del dashboard Components. Se disponen tres elementos diferentes organizados en tres filas.
+</figcaption>
+</figure>
+</div>
+<p>Además, en la barra de navegación se ha añadido un enlace al código fuente y otro a la documentación oficial de <code>flexdashboard</code>.</p>
+</section>
+<section id="niveles-de-poluciónen-2016-en-todo-el-mundo." class="level3" data-number="6.3.2">
+<h3 data-number="6.3.2" class="anchored" data-anchor-id="niveles-de-poluciónen-2016-en-todo-el-mundo."><span class="header-section-number">6.3.2</span> Niveles de poluciónen 2016 en todo el mundo.</h3>
+<p>Este <code>dashboard</code> muestra los niveles de contaminación del aire por partículas finas (PM2.5) en cada uno de los países del mundo en 2016. Los datos se han obtenido del Banco Mundial utilizando el paquete <code>wbstats</code> y el mapa mundial se obtiene del paquete <code>rnaturalearth</code>.</p>
+<p>En la Figura <a href="#fig-mfdb-tab1" class="quarto-xref">Figura&nbsp;<span>6.12</span></a> se presenta la primera página del dashboard en la que se ha incluido la representación de un mapa interactivo con leaflet y la visualización estática del histograma con <code>ggplot2</code>.</p>
+<div id="fig-mfdb-tab1" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mfdb-tab1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="img/mfdb_tab1.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mfdb-tab1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;6.12: My first dashboard contiene un mapa interactivo y un histograma.
+</figcaption>
+</figure>
+</div>
+<p>La Figura <a href="#fig-mfdb-tab2" class="quarto-xref">Figura&nbsp;<span>6.13</span></a> muestra el dataset que se ha incluido mediante una tabla <code>DT</code> en la segunda página del dashboard.</p>
+<div id="fig-mfdb-tab2" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mfdb-tab2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="img/mfdb_tab2.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mfdb-tab2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;6.13: La segunda página contiene el dataset.
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="bc-liquor-store-prices" class="level3" data-number="6.3.3">
+<h3 data-number="6.3.3" class="anchored" data-anchor-id="bc-liquor-store-prices"><span class="header-section-number">6.3.3</span> BC Liquor Store Prices</h3>
+<p>En este último ejemplo se muestra en un histograma el consumo de diferentes tipos de bebidas en Canadá, Francia e Italia. Al tratarse de un dashboard dinámica, en la Figura <a href="#fig-bc-liquore-store" class="quarto-xref">Figura&nbsp;<span>6.14</span></a> se pueden ver los distintos elementos con los que puede interactuar el usuario. Según el país, tipo de bebida y rango de precio, se mostrará su correspondiente histograma así como su tabla de valores.</p>
+<div id="fig-bc-liquore-store" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-bc-liquore-store-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="img/bc-liquore-store.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-bc-liquore-store-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;6.14: Shiny Dashboard BC Liquiore Store.
+</figcaption>
+</figure>
+</div>
+
+
+</section>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
