@@ -501,7 +501,7 @@ paquetes R con información cartográfica, datos climáticos y de otra índole, 
 integrados con el resto de paquetes populares como `ggplot2`. Destacan:
 
 - [`mapSpain`](https://ropenspain.github.io/mapSpain/articles/x02_mapasesp.html): facilita la creación de
-mapas de diferentes niveles administrativos de España. Incluye muchas herramientas, como por ejemplo una
+mapas a diferentes niveles administrativos de España. Incluye muchas herramientas, como por ejemplo una
 función para representar las regiones como cuadrados o hexágonos de forma esquemática, siguiendo una idea
 parecida a los gráficos creados por el [paquete `statebins`](https://github.com/hrbrmstr/statebins). Estos
 son una alternativa simplificada a los [mapas de coropletas](https://r-charts.com/es/espacial/mapa-coropletas/).
