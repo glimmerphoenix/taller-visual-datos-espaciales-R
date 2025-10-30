@@ -8,24 +8,19 @@ VS Code.
 
 Además, es necesario instalar los paquete descritos en la @tbl-R-packages.
 
-| Paquete       | Descripción                                                    |
-|:--------------|:---------------------------------------------------------------|
-| `ggplot2`     | Paquete principal de visualización de datos en el Tidyverse      |
-| `tidyverse`   | Metapaquete que instala las herramientas principales del Tidyverse      |
-| `agridat`     | Conjunto de datos sobre experimentos  deagricultura, incluyendo cultivos de campo, cultivos arbóreos o estudios con animales, entre otros      |
-| `Hmisc`       | Funciones de utilidad desarrolladas por Frank E. Harrell      |
-| `ggthemes`    | Temas adicionales para personalizar gráficos con `ggplot2`       |
-| `ggstatsplot` | Creación de gráficas preapradas para publicaciones científicas      |
-| `patchwork`   | Composición sencilla de varios gráficos con `ggplot2` en la misma imagen      |
-| `GGally`      | Herramientas adicionales que extienden la funcionalidad de `ggplot2`  |
-| `ggpubr`      | Creación de gráficas de calidad para publicación científica      |
-| `ggfortify`   | Herramientas de visualización para diagnóstico de modelos. *Cuidado*: puede tener interacciones problemáticas con otros paquetes |
-| `faraway`     | Funciones y datos para los libros publicados por Julian J. Faraway      |
-| `tsibble`     | Soporte para datos de series temporales compatible con el Tidyverse      |
-| `feasts`      | Funciones adicionales para extracción de *features* y estadísticas en series temporales       |
-| `climaemet`   | Conector para obtención de datos de la API pública de AEMET      |
-| `sf`          | Soporte para manipulación y representación de objetos representados con el estándar *simple features*      |
-| `mapview`     | Creación de gráficos espaciales intereactivos en R      |
+| Paquete        | Descripción                                                    |
+|:---------------|:---------------------------------------------------------------|
+| `ggplot2`      | Paquete principal de visualización de datos en el Tidyverse      |
+| `tidyverse`    | Metapaquete que instala las herramientas principales del Tidyverse      |
+| `agridat`      | Conjunto de datos sobre experimentos  deagricultura, incluyendo cultivos de campo, cultivos arbóreos o estudios con animales, entre otros      |
+| `Hmisc`        | Funciones de utilidad desarrolladas por Frank E. Harrell      |
+| `ggthemes`     | Temas adicionales para personalizar gráficos con `ggplot2`       |
+| `sf`           | Soporte para manipulación y representación de objetos codificados con el estándar *simple features*      |
+| `terra`        | Soporte para manipulación y representación de objetos de tipo *raster*      |
+| `mapview`      | Creación de gráficos espaciales intereactivos en R      |
+| `mapSpain`     | Facilita la creación de mapas a diferentes niveles administrativos de España    |
+| `climaemet`    | Acceso a datos de la AEMET desde R     |
+| `airqualityES` | Datos sobre calidad del aire en España (periodio de 18 años)     |
 
 : Listado de paquetes R utilizados en los ejemplos de este taller. {#tbl-R-packages .striped .hover}
 

@@ -1,5 +1,16 @@
 # Recursos adicionales
 
-This is a book created from markdown and executable code.
+- Manual oficial de `ggplot2`: <https://ggplot2-book.org> (3ª ed. en progreso).
+- Gráficos para datos espaciales con R: <https://r-charts.com/es/espacial/>.
 
-See @knuth84 for additional discussion of literate programming.
+Las dos fuentes principales para aprendizaje sobre procesado y análisis de datos espaciales
+en R son:
+
+- [*Geocomputation with R*](<https://r.geocompx.org/>) [@lovelace2025].
+- [*Spatial Data Science: With Applications in R*](<https://r-spatial.org/book/>) [@pebesma2023].
+
+Otras referencias interesantes que explican distintos tipos de modelos de análisis de datos
+espaciales, incluyendo una gran dosis de representaciones gráficas son:
+
+- [*Spatial Statistics for Data Science: Theory and Practice with R*](https://www.paulamoraga.com/book-spatial/) [@moraga2023].
+- [*Bayesian Inference with INLA*](https://becarioprecario.bitbucket.io/inla-gitbook/) [@gomez-rubio2020].
