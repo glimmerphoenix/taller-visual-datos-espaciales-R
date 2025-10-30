@@ -6,7 +6,7 @@ project:
     browser: true
 
 book:
-  title: "taller-visual-datos-espaciales-R"
+  title: "Visualización de datos espaciales con R"
   author:
     - "María Jesús Algar"
     - "Felipe Ortega"

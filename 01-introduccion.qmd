@@ -1,5 +1,121 @@
 # Introducción
 
-This is a book created from markdown and executable code.
+## Tipos de datos espaciales
 
-See @knuth84 for additional discussion of literate programming.
+Los **datos espaciales** son aquellos que incluyen cualquier tipo de información
+que determine una ubicación asociada a una muestra. Un buen ejemplo son las coordenadas
+de latitud y longitud, que se pueden registrar gracias a la proliferación de
+dispositivos equipados con GPS. Otros ejemplos serían datos recogidos por provincias
+en un país o muestras recogidas en una explotación agrícola, dividida previamente 
+en cuadrículas a intervalos regulares para tomar datos en cada sección.
+
+Según la clasificación ofrecida por @Cressie1993, podemos distinguir tres tipos
+principales de datos espaciales:
+
+- **Datos geoestadísticos** (*geostatistical data*): datos espaciales cuya variación 
+se produce sobre un espacio continuo. La variable de interés (respuesta) puede 
+ser discreta o continua. Algunos ejemplos son:
+    * Niveles de polución en diferentes zonas de una ciudad.
+    * Niveles de ozono medidos en una determinada zona geográfica.
+    * Precipitación registrada en un territorio durante una jornada.
+
+- **Malla de datos** (*lattice data*): en este caso, la variación se produce sobre un
+dominio discreto, por lo que los datos solo pueden ocurrir en un conjunto fijo de
+localizaciones que se pueden enumerar. En la mayoría de casos, se trata de datos
+agregados sobre áreas o regiones. Ejemplos:
+    * Regiones censales.
+    * Códigos postales.
+    * Barrios o distritos.
+    * Condados, provincias.
+    
+- **Patrones puntuales** (*point pattern data*): La variable de interés es la localización 
+de eventos que se producen en ubicaciones específicas, sobre un espacio discreto
+o continuo. Un ejemplo sería la posición de los incendios forestales producidos
+durante un año en una provincia española. El objetivo más común es determinar si
+las realizaciones del evento de interés siguen algún patrón dentro del área de
+estudio o son aleatorias. Más concretamente:
+    * Si las ubicaciones de los eventos son completamente aleatorias (las posiciones
+    de los eventos no afectan a las de otros eventos).
+    * Si las ubicaciones son uniformes o regulares (cada evento está lo más alejado
+    posible de los eventos vecinos).
+    * Si las ubicaciones están agregadas o forman *clusters* (los eventos tienden
+    a agruparse en ciertas localizaciones).
+
+Además de los datos con dependencias espaciales, en la actualidad surgen también
+muchos estudios que involucran **datos espacio-temporales**. En este tipo de datos,
+las variables observadas tienen simultáneamente tanto dependencia espacial como
+temporal. Un ejemplo sería la concentración de agentes contaminantes en diferentes
+zonas de una ciudad, medida diariamente a lo largo de un año.
+
+## Estadística para datos espaciales
+
+Cuando los datos recogidos poseen dependencias estrictas (espaciales, temporales,
+o espacio-temporales), no podemos utilizar técnicas estadísticas convencionales
+para analizarlos. En efecto, las herramientas de estadística clásica exigen, como
+condición indispensable, que exista independencia entre los valores observados.
+Esta norma claramente no se cumple para datos con dependencias. Por ejemplo, en
+el caso de datos espaciales es muy común que exista alguna relación entre muestras
+recogidas en ubicaciones cercanas entre sí.
+
+
+## R y su ecosistema
+
+El análisis estadístico de datos es una tarea fundamental 
+en la transformación digital de las empresas y organizaciones. 
+Siempre ha estado ahí, pero
+en la actualidad la disponibilidad de datos, la cantidad de los mismos, 
+y la velocidad con la que se requieren resultados, está haciendo
+necesario el capacitar a los profesionales
+para el análisis de datos con nuevas herramientas. Nuevas tendencias (muchas veces
+malinterpretadas) como _Big Data_, Industria 4.0, _Internet of Things_ (IoT), 
+o _Data Science_, aumentan el interés por parte de las empresas, los profesionales 
+y los investigadores en estas técnicas.
+
+El tratamiento de datos y su análisis requiere el uso de
+software avanzado. Aunque algunas tareas se puede realizar
+eficazmente con programas de hoja de cálculo 
+como Excel (por ejemplo, son una buena herramienta para mecanizar y almacenar datos), 
+se debería
+utilizar software especializado para el análisis de datos. Existen distintos 
+paquetes estadísticos comerciales, como SPSS, Statgraphics, Stata, JMP o Minitab 
+(líder en análisis de datos para metodologías de calidad). En los últimos 
+años se ha abierto camino como alternativa el [software estadístico y lenguaje de
+programación **R**](http://www.r-project.org) [@R-base]. Hay otras alternativas que en su mayoría, o son parciales referidas a un 
+ámbito concreto, o son más lenguajes de programación que software estadístico, como Python. 
+R es software libre, pero su gratuidad solo es una
+de sus ventajas (free as in _free beer_, and free as
+in _free speech_), como se verá a lo largo del curso. El gran inconveniente
+es la curva de aprendizaje: no es tan fácil de aprender y usar como un
+software de ventanas, ya que el uso de R se basa en expresiones que
+hay que ejecutar desde scripts. No obstante, una vez que se tienen las
+nociones básicas es fácil ir aplicando nuevos métodos.
+
+
+R es un 
+sistema para **computación estadística**: software de **análisis de datos** y
+**lenguaje de programación**. Ha sido ampliamente utilizado en investigación y docencia, 
+y actualmente también 
+en las empresas y organismos públicos. Es la evolución del trabajo de los laboratorios Bell con el 
+lenguaje S [@venables2002modern],
+llevado al mundo del software libre por Ross Ihaka y Robert Gentleman en los años 90 [@ihaka1996r].
+La version R 1.0.0 se publicó el 29 de febrero de 2000.
+
+En R tenemos numerosos paquetes para representar información geográfica que nos permiten realizar
+la lectura y escritura de este tipo de datos, llevar a cabo análisis de patrones de puntos y operaciones geoestadísticas. Básicamente existen dos mecanismos para trabajar con datos espaciales:
+
+- **Vectores**. En este modelo, el mundo real se representa mediante **puntos**, **líneas**, **polígonos** y **combinaciones** de todos ellos. Por lo que la información se define mediante pares o ternas de valores.  Es decir, los datos vectoriales describen la forma de un objeto y también pueden incluir variables adicionales. Por ejemplo, un conjunto de datos vectoriales puede ser la frontera de las comunidades autónomas de España y, además, puede contener información como el nombre de la comunidad autónoma y su número de habitantes. Este modelo es muy utilizado en el campo de las ciencias sociales porque la información con la que se trabaja tiende a tener fronteras muy bien definidas.
+
+- **Ráster**. Este modelo organiza el espacio como una **matriz de celdas** de igual tamaño. En cada celda se guarda la información correspondiente a ella. Es decir, cada celda contiene la información de los objetos que están en ella. Se trabaja por **capas**, agregando características espaciales a una resolución determinada, por lo que resulta muy útil para representar **información continua** a lo largo de un área. Este modelo es muy utilizado en la cartografía web, en la fotografía aérea y en los dispositivos de teledetección basados en satélites. Por este motivo, en el ámbito de las ciencias ambientales se usa más la filosofía ráster.
+
+En lo que resta del taller, vamos a utilizar (entre otros) los paquetes que cargamos a continuación. Asegúrate de tenerlos instalados antes de continuar con la ejecución del código. Nótese que el paquete {spDataLarge} hay que instalarlo desde un repositorio específico como se indica en la línea comentada. ^[El resto se pueden instalar desde CRAN usando el panel _Packages_ de RStudio o la función `install.packages` con el repositorio por defecto. Algunos paquetes tienen muchas dependencias y pueden tardar. Si después de la instalación alguno de los paquetes no se carga, comprueba que en la instalación no se produjeron errores.]
+
+```{r, echo=TRUE, message=FALSE}
+library(sf)
+library("rnaturalearth")
+library(tidyverse) # Carga, entre otros, ggplot2 y dplyr
+library(spData)
+# install.packages("spDataLarge", repos = "https://nowosad.r-universe.dev")
+library(spDataLarge)
+library(terra)
+```
+
