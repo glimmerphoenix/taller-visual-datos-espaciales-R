@@ -1,5 +1,34 @@
-# Preface {.unnumbered}
+# Prefacio {.unnumbered}
 
-This is a Quarto book.
+En este taller exploramos los fundamentos prácticos para la creación de
+gráficos para visualización de datos espaciales utilizando el lenguaje R. La
+representación gráfica de la información de información espacial tiene una
+gran importancia en distintas áreas de aplicación. Aquí nos centraremos en 
+visualizaciones que puedan resultar especialmente útiles para los/as participantes
+en Ciencias Agrarias y Ambientales para los/as participantes.
 
-To learn more about Quarto books visit <https://quarto.org/docs/books>.
+Este es un **taller práctico** que presenta ejemplos reales y comandos para
+crear paso a paso visualizaciones de datos efectivas con R. Además,
+junto a la explicación de los conceptos clave para entender este proceso también
+se ofrecen recomendaciones sobre buenas prácticas para crear gáficos más informativos
+y claros, evitando errores comunes y potenciando su capacidad de condensar
+gran cantidad de información sin que conlleve una excesiva complejidad para su
+correcta interpretación.
+
+Los apuntes para este taller práctico se han realizado con 
+[Quarto](https://quarto.org), una herramienta para creación de
+documentación científica y programación literaria compatible con
+R y otros lenguajes de programación científica.
+
+## Requisitos previos
+
+Para poder realizar los ejemplos inlcuidos en este taller necesitas tener instalado
+R y una IDE de desarrollo para este lenguaje. Se recomienda instalar RStudio o MS
+Visual Code como entorno de programación.
+
+- [Instalación de R](https://cran.r-project.org/).
+- [Instalación de RStudio](https://posit.co/download/rstudio-desktop/).
+
+Adicionalmente, es necesario instalar una serie de paquetes R antes de ejecutar los
+ejemplos, para que todas las dependencias estén disponibles en nuestro sistema.
+Consulta el Apéndice [@sec-pkg-requirements] para comprobar el listado de paquetes R necesarios.
