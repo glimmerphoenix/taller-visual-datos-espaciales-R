@@ -1,5 +1,7 @@
 # Casos de estudio
 
-This is a book created from markdown and executable code.
+## Representación de datos espaciales con `ggplot2`
 
-See @knuth84 for additional discussion of literate programming.
+### Construcción de un gráfico paso a paso
+
+
