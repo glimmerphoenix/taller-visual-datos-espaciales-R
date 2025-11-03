@@ -2,7 +2,129 @@
 
 ## Representación de datos espaciales con `ggplot2`
 
+Vamos a utilizar el dataset `beech`, con datos sobre el estado de salud de las hayas cerca
+de la localidad alemana de Rothenbuch (Spessart), para componer otros ejemplos de
+construcción de gráficos para visualización de datos paso a paso con `ggplot2`.
 
+***Dataset* `beech`**
+
+De acuerdo con la información facilitada en [@fahrmeir2022], este *dataset* proviene de un proyecto
+para comprobar las condiciones en que se encuentra el bosque the Rothenbuch (Spessart), realizado
+por Axel Göttlein (Tech. Univ., Munich) desde 1982. En este caso, las localizaciones de los
+árboles examinados están mucho más próximas entre sí de lo habitual en los análisis oficiales
+a gran escala. Se examinaron árboles en 83 ubicaciones diferentes alrededor de la localidad,
+centrándose en cinco especies: haya, roble, abeto, alerce y pino. El archivo de datos está restringido
+a la información sobre las hayas. En concreto, cada año la salud de las hayas se categoriza mediante
+la variable respuesta `defoliation` (defoliación), medida en 9 niveles diferentes. La interpretación
+de los posibles valores es que 0% corresponde a un árbol sano y 100% se asigna a un arbol muerto.
+
+::: {.callout-warning}
+## Datos mal codificados
+
+El archivo de datos `data/beech.raw` incluid en el repositorio de este taller,
+es una copia del archivo original descargado de 
+la [página web](https://www.uni-goettingen.de/de/551625.html) oficial del libro.
+Sin embargo, dicho archivo original contiene 3 valores erróneamente codificados (aparece 
+el valor `.`) para la columna de la variable `ph`, concretamente en las filas 
+1678, 1679 y 1797.
+
+Para evitar errores de lectura, se han recodificado esos tres valores como `4.` para
+los ejemplos de este taller. No obstante, se notifica esta modificación a los
+usuarios/as que estuviesen interesados en utilizar este *dataset* para otros fines (como
+practicar modelos avanzados de regresión).
+:::
+
+En primer lugar, exploramos el contenido de cada una de las columnas incluidas dentro de
+este dataset.
+
+```{r}
+#| label: beech-data-describe
+library(Hmisc)
+library(readr)
+
+beech <- read_table("data/beech.raw",
+  col_types = cols(id = col_integer(), year = col_integer(), age = col_integer(),
+                   canopyd = col_integer(), gradient = col_integer(),
+                   alt = col_integer(), depth = col_integer(), ph = col_double(),
+                   watermoisture = col_factor(levels = c("1", "2", "3")),
+                   alkali = col_factor(levels = c("1","2", "3", "4")),
+                   humus = col_factor(levels = c("0", "1", "2", "3", "4",
+                                                 "5", "6", "7", "8", "9")),
+                   type = col_factor(levels = c("0","1")),
+                   fert = col_factor(levels = c("0","1"))
+                   ))
+str(beech)
+
+# Para un resumen más completo:
+# Hmisc::html(describe(beech))
+```
+
+A continuación, la @fig-beech-2ch muestra un ejemplo de visualización de estos datos empleando
+dos canales (color y tamaño) para cada símbolo en el área de representación, junto con diversas
+facetas (paneles), una para cada año que muestra la evolución del estudio.
+
+
+```{r}
+#| label: fig-beech-2ch
+#| fig-cap: "Visualización utilizando dos canales y facetas."
+#| fig-height: 12
+#| fig-width: 15
+#| column: page-right
+library(ggplot2)
+
+beech_years <- beech |>
+               dplyr::filter(year == 1983 | year == 1987 |
+                      year == 1991 | year == 1995 |
+                      year == 1999 | year == 2004)
+
+p_beech <- ggplot(data = beech_years,
+                  aes(x = x, y = y,
+                      color = defol, size = age)) +
+           geom_point(alpha = 0.6) +
+           facet_wrap(~year, nrow = 3) +
+           theme(
+            legend.text = element_text(size = 12),
+            legend.title = element_text(size = 14),
+            strip.text = element_text(size = 12),
+            axis.text = element_text(size = 12),
+            axis.title = element_text(size = 14), 
+           )
+p_beech
+```
+
+
+Seguidamente, la @fig-beech-3ch muestra un gráfico similar al de la @fig-beech-2ch, pero añadiendo
+en esta ocasión un tercer canal (forma del símbolo) conectado a los valores categóricos de una
+variable adicional (`alkali`). Podemos observar cómo la elevada multicanalidad de este nuevo 
+gráfico empieza a perjudicar la legibilidad de la representación, siendo ya complicado fusionar
+toda la información que nos proporciona simultáneamente.
+
+```{r}
+#| label: fig-beech-3ch
+#| fig-cap: "Visualización utilizando tres canales y facetas."
+#| fig-height: 12
+#| fig-width: 15
+#| column: page-right
+
+p_beech <- ggplot(data = beech_years,
+                  aes(x = x, y = y,
+                      color = defol, size = age)) +
+           geom_point(aes(shape = alkali), alpha = 0.6) +
+           facet_wrap(~year, nrow = 3) +
+           theme(
+            legend.text = element_text(size = 12),
+            legend.title = element_text(size = 14),
+            strip.text = element_text(size = 12),
+            axis.text = element_text(size = 12),
+            axis.title = element_text(size = 14)
+           )
+p_beech
+```
+
+Sería muy improbable que pudiésemos agregar canales adicionales a esta representación gráfica,
+con independencia de que todavía existan más variables disponibles. Como vemos, el límite de tres
+canales simultáneos y añadiendo facetas supone una frontera muy rígida para la representación
+gráfica de la información.
 
 ## Uso del paquete `mapSpain`
 
