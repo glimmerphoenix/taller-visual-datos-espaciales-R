@@ -315,6 +315,12 @@ div.csl-indent {
   <li><a href="#mapas-dinámicos-con-leaflet" id="toc-mapas-dinámicos-con-leaflet" class="nav-link" data-scroll-target="#mapas-dinámicos-con-leaflet"><span class="header-section-number">7.2.7</span> Mapas dinámicos con Leaflet</a></li>
   <li><a href="#mapas-geográficos" id="toc-mapas-geográficos" class="nav-link" data-scroll-target="#mapas-geográficos"><span class="header-section-number">7.2.8</span> Mapas geográficos</a></li>
   </ul></li>
+  <li><a href="#ejemplos-para-el-paquete-terra-gráficos-raster" id="toc-ejemplos-para-el-paquete-terra-gráficos-raster" class="nav-link" data-scroll-target="#ejemplos-para-el-paquete-terra-gráficos-raster"><span class="header-section-number">7.3</span> Ejemplos para el paquete terra (gráficos raster)</a>
+  <ul class="collapse">
+  <li><a href="#imágenes-satelitales" id="toc-imágenes-satelitales" class="nav-link" data-scroll-target="#imágenes-satelitales"><span class="header-section-number">7.3.1</span> Imágenes satelitales</a></li>
+  </ul></li>
+  <li><a href="#tutorial-paquete-rsi" id="toc-tutorial-paquete-rsi" class="nav-link" data-scroll-target="#tutorial-paquete-rsi"><span class="header-section-number">7.4</span> Tutorial paquete <code>rsi</code></a></li>
+  <li><a href="#caso-de-estudio-en-ecología" id="toc-caso-de-estudio-en-ecología" class="nav-link" data-scroll-target="#caso-de-estudio-en-ecología"><span class="header-section-number">7.5</span> Caso de estudio en ecología</a></li>
   </ul>
 </nav>
     </div>
@@ -340,8 +346,156 @@ div.csl-indent {
 </header>
 
 
-<section id="representación-de-datos-espaciales-con-ggplot2" class="level2" data-number="7.1">
+<section id="representación-de-datos-espaciales-con-ggplot2" class="level2 page-columns page-full" data-number="7.1">
 <h2 data-number="7.1" class="anchored" data-anchor-id="representación-de-datos-espaciales-con-ggplot2"><span class="header-section-number">7.1</span> Representación de datos espaciales con <code>ggplot2</code></h2>
+<p>Vamos a utilizar el dataset <code>beech</code>, con datos sobre el estado de salud de las hayas cerca de la localidad alemana de Rothenbuch (Spessart), para componer otros ejemplos de construcción de gráficos para visualización de datos paso a paso con <code>ggplot2</code>.</p>
+<p><strong><em>Dataset</em> <code>beech</code></strong></p>
+<p>De acuerdo con la información facilitada en <span class="citation" data-cites="fahrmeir2022">(<a href="references.html#ref-fahrmeir2022" role="doc-biblioref">Fahrmeir et&nbsp;al., 2022</a>)</span>, este <em>dataset</em> proviene de un proyecto para comprobar las condiciones en que se encuentra el bosque the Rothenbuch (Spessart), realizado por Axel Göttlein (Tech. Univ., Munich) desde 1982. En este caso, las localizaciones de los árboles examinados están mucho más próximas entre sí de lo habitual en los análisis oficiales a gran escala. Se examinaron árboles en 83 ubicaciones diferentes alrededor de la localidad, centrándose en cinco especies: haya, roble, abeto, alerce y pino. El archivo de datos está restringido a la información sobre las hayas. En concreto, cada año la salud de las hayas se categoriza mediante la variable respuesta <code>defoliation</code> (defoliación), medida en 9 niveles diferentes. La interpretación de los posibles valores es que 0% corresponde a un árbol sano y 100% se asigna a un arbol muerto.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Datos mal codificados
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>El archivo de datos <code>data/beech.raw</code> incluid en el repositorio de este taller, es una copia del archivo original descargado de la <a href="https://www.uni-goettingen.de/de/551625.html">página web</a> oficial del libro. Sin embargo, dicho archivo original contiene 3 valores erróneamente codificados (aparece el valor <code>.</code>) para la columna de la variable <code>ph</code>, concretamente en las filas 1678, 1679 y 1797.</p>
+<p>Para evitar errores de lectura, se han recodificado esos tres valores como <code>4.</code> para los ejemplos de este taller. No obstante, se notifica esta modificación a los usuarios/as que estuviesen interesados en utilizar este <em>dataset</em> para otros fines (como practicar modelos avanzados de regresión).</p>
+</div>
+</div>
+<p>En primer lugar, exploramos el contenido de cada una de las columnas incluidas dentro de este dataset.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Hmisc)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Adjuntando el paquete: 'Hmisc'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:base':
+
+    format.pval, units</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readr)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>beech <span class="ot">&lt;-</span> <span class="fu">read_table</span>(<span class="st">"data/beech.raw"</span>,</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">col_types =</span> <span class="fu">cols</span>(<span class="at">id =</span> <span class="fu">col_integer</span>(), <span class="at">year =</span> <span class="fu">col_integer</span>(), <span class="at">age =</span> <span class="fu">col_integer</span>(),</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>                   <span class="at">canopyd =</span> <span class="fu">col_integer</span>(), <span class="at">gradient =</span> <span class="fu">col_integer</span>(),</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>                   <span class="at">alt =</span> <span class="fu">col_integer</span>(), <span class="at">depth =</span> <span class="fu">col_integer</span>(), <span class="at">ph =</span> <span class="fu">col_double</span>(),</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>                   <span class="at">watermoisture =</span> <span class="fu">col_factor</span>(<span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"1"</span>, <span class="st">"2"</span>, <span class="st">"3"</span>)),</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>                   <span class="at">alkali =</span> <span class="fu">col_factor</span>(<span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"1"</span>,<span class="st">"2"</span>, <span class="st">"3"</span>, <span class="st">"4"</span>)),</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>                   <span class="at">humus =</span> <span class="fu">col_factor</span>(<span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"0"</span>, <span class="st">"1"</span>, <span class="st">"2"</span>, <span class="st">"3"</span>, <span class="st">"4"</span>,</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>                                                 <span class="st">"5"</span>, <span class="st">"6"</span>, <span class="st">"7"</span>, <span class="st">"8"</span>, <span class="st">"9"</span>)),</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>                   <span class="at">type =</span> <span class="fu">col_factor</span>(<span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"0"</span>,<span class="st">"1"</span>)),</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>                   <span class="at">fert =</span> <span class="fu">col_factor</span>(<span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"0"</span>,<span class="st">"1"</span>))</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>                   ))</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(beech)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>spc_tbl_ [1,796 × 16] (S3: spec_tbl_df/tbl_df/tbl/data.frame)
+ $ id           : int [1:1796] 5 5 5 5 5 5 5 5 5 5 ...
+ $ year         : int [1:1796] 1983 1984 1985 1986 1987 1988 1989 1990 1991 1992 ...
+ $ defol        : num [1:1796] 0 0 0 0 0 0 0 0 0 0 ...
+ $ x            : num [1:1796] 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 ...
+ $ y            : num [1:1796] 5 5 5 5 5 5 5 5 5 5 ...
+ $ age          : int [1:1796] 43 44 45 46 47 48 49 50 51 52 ...
+ $ canopyd      : int [1:1796] 100 100 100 100 100 100 100 100 100 100 ...
+ $ gradient     : int [1:1796] 2 2 2 2 2 2 2 2 2 2 ...
+ $ alt          : int [1:1796] 320 320 320 320 320 320 320 320 320 320 ...
+ $ depth        : int [1:1796] 10 10 10 10 10 10 10 10 10 10 ...
+ $ ph           : num [1:1796] 4.61 4.34 4.75 3.99 5.3 3.83 4.05 4.06 4.3 4.84 ...
+ $ watermoisture: Factor w/ 3 levels "1","2","3": 1 1 1 1 1 1 1 1 1 1 ...
+ $ alkali       : Factor w/ 4 levels "1","2","3","4": 3 3 3 3 3 3 3 3 3 3 ...
+ $ humus        : Factor w/ 10 levels "0","1","2","3",..: 3 5 2 4 2 1 1 3 1 1 ...
+ $ type         : Factor w/ 2 levels "0","1": 2 2 2 2 2 2 2 2 2 2 ...
+ $ fert         : Factor w/ 2 levels "0","1": 2 2 2 2 2 2 2 2 2 2 ...
+ - attr(*, "spec")=
+  .. cols(
+  ..   id = col_integer(),
+  ..   year = col_integer(),
+  ..   defol = col_double(),
+  ..   x = col_double(),
+  ..   y = col_double(),
+  ..   age = col_integer(),
+  ..   canopyd = col_integer(),
+  ..   gradient = col_integer(),
+  ..   alt = col_integer(),
+  ..   depth = col_integer(),
+  ..   ph = col_double(),
+  ..   watermoisture = col_factor(levels = c("1", "2", "3"), ordered = FALSE, include_na = FALSE),
+  ..   alkali = col_factor(levels = c("1", "2", "3", "4"), ordered = FALSE, include_na = FALSE),
+  ..   humus = col_factor(levels = c("0", "1", "2", "3", "4", "5", "6", "7", "8", "9"), ordered = FALSE, include_na = FALSE),
+  ..   type = col_factor(levels = c("0", "1"), ordered = FALSE, include_na = FALSE),
+  ..   fert = col_factor(levels = c("0", "1"), ordered = FALSE, include_na = FALSE)
+  .. )</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Para un resumen más completo:</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Hmisc::html(describe(beech))</span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>A continuación, la <a href="#fig-beech-2ch" class="quarto-xref">Figura&nbsp;<span>7.1</span></a> muestra un ejemplo de visualización de estos datos empleando dos canales (color y tamaño) para cada símbolo en el área de representación, junto con diversas facetas (paneles), una para cada año que muestra la evolución del estudio.</p>
+<div class="cell page-columns page-full">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>beech_years <span class="ot">&lt;-</span> beech <span class="sc">|&gt;</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>               dplyr<span class="sc">::</span><span class="fu">filter</span>(year <span class="sc">==</span> <span class="dv">1983</span> <span class="sc">|</span> year <span class="sc">==</span> <span class="dv">1987</span> <span class="sc">|</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>                      year <span class="sc">==</span> <span class="dv">1991</span> <span class="sc">|</span> year <span class="sc">==</span> <span class="dv">1995</span> <span class="sc">|</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>                      year <span class="sc">==</span> <span class="dv">1999</span> <span class="sc">|</span> year <span class="sc">==</span> <span class="dv">2004</span>)</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>p_beech <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data =</span> beech_years,</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y,</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>                      <span class="at">color =</span> defol, <span class="at">size =</span> age)) <span class="sc">+</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>           <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>           <span class="fu">facet_wrap</span>(<span class="sc">~</span>year, <span class="at">nrow =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>           <span class="fu">theme</span>(</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>            <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>),</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>            <span class="at">legend.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">14</span>),</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>            <span class="at">strip.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>),</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>            <span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>),</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>            <span class="at">axis.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">14</span>), </span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>           )</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>p_beech</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display page-columns page-full">
+<div id="fig-beech-2ch" class="quarto-float quarto-figure quarto-figure-center anchored page-columns page-full">
+<figure class="quarto-float quarto-float-fig figure page-columns page-full">
+<div aria-describedby="fig-beech-2ch-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca" class="page-columns page-full">
+<img src="07-casos-estudio_files/figure-html/fig-beech-2ch-1.png" class="img-fluid figure-img column-page-right" width="1440">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-beech-2ch-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;7.1: Visualización utilizando dos canales y facetas.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Seguidamente, la <a href="#fig-beech-3ch" class="quarto-xref">Figura&nbsp;<span>7.2</span></a> muestra un gráfico similar al de la <a href="#fig-beech-2ch" class="quarto-xref">Figura&nbsp;<span>7.1</span></a>, pero añadiendo en esta ocasión un tercer canal (forma del símbolo) conectado a los valores categóricos de una variable adicional (<code>alkali</code>). Podemos observar cómo la elevada multicanalidad de este nuevo gráfico empieza a perjudicar la legibilidad de la representación, siendo ya complicado fusionar toda la información que nos proporciona simultáneamente.</p>
+<div class="cell page-columns page-full">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>p_beech <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data =</span> beech_years,</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y,</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>                      <span class="at">color =</span> defol, <span class="at">size =</span> age)) <span class="sc">+</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>           <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">shape =</span> alkali), <span class="at">alpha =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>           <span class="fu">facet_wrap</span>(<span class="sc">~</span>year, <span class="at">nrow =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>           <span class="fu">theme</span>(</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>            <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>),</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>            <span class="at">legend.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">14</span>),</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>            <span class="at">strip.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>),</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>            <span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>),</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>            <span class="at">axis.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">14</span>)</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>           )</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>p_beech</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display page-columns page-full">
+<div id="fig-beech-3ch" class="quarto-float quarto-figure quarto-figure-center anchored page-columns page-full">
+<figure class="quarto-float quarto-float-fig figure page-columns page-full">
+<div aria-describedby="fig-beech-3ch-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca" class="page-columns page-full">
+<img src="07-casos-estudio_files/figure-html/fig-beech-3ch-1.png" class="img-fluid figure-img column-page-right" width="1440">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-beech-3ch-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;7.2: Visualización utilizando tres canales y facetas.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Sería muy improbable que pudiésemos agregar canales adicionales a esta representación gráfica, con independencia de que todavía existan más variables disponibles. Como vemos, el límite de tres canales simultáneos y añadiendo facetas supone una frontera muy rígida para la representación gráfica de la información.</p>
 </section>
 <section id="uso-del-paquete-mapspain" class="level2 page-columns page-full" data-number="7.2">
 <h2 data-number="7.2" class="anchored" data-anchor-id="uso-del-paquete-mapspain"><span class="header-section-number">7.2</span> Uso del paquete <code>mapSpain</code></h2>
@@ -354,51 +508,52 @@ div.csl-indent {
 </ul>
 <p>Lo más habitual es descargar e instalar la versión estable del paquete, disponible en CRAN.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"mapSpain"</span>, <span class="at">dependencies =</span> <span class="cn">TRUE</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"mapSpain"</span>, <span class="at">dependencies =</span> <span class="cn">TRUE</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mapSpain)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mapSpain)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-✔ dplyr     1.1.4     ✔ readr     2.1.5
-✔ forcats   1.0.1     ✔ stringr   1.5.2
-✔ ggplot2   4.0.0     ✔ tibble    3.3.0
+✔ dplyr     1.1.4     ✔ stringr   1.5.2
+✔ forcats   1.0.1     ✔ tibble    3.3.0
 ✔ lubridate 1.9.4     ✔ tidyr     1.3.1
 ✔ purrr     1.1.0     
 ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-✖ dplyr::filter() masks stats::filter()
-✖ dplyr::lag()    masks stats::lag()
+✖ dplyr::filter()    masks stats::filter()
+✖ dplyr::lag()       masks stats::lag()
+✖ dplyr::src()       masks Hmisc::src()
+✖ dplyr::summarize() masks Hmisc::summarize()
 ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
 </div>
 </div>
 <p>Para acelerar la ejecución de código, dado que el paquete se descarga datos desde repositorios externos, es muy recomendable <strong>establecer un directorio de descarga</strong> específico para el usuario.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># El argumento install = TRUE hace esta configuración persistente</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">esp_set_cache_dir</span>(<span class="st">"~/R/mapslib/mapSpain"</span>, <span class="at">install =</span> <span class="cn">TRUE</span>, <span class="at">verbose =</span> <span class="cn">TRUE</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># El argumento install = TRUE hace esta configuración persistente</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">esp_set_cache_dir</span>(<span class="st">"~/R/mapslib/mapSpain"</span>, <span class="at">install =</span> <span class="cn">TRUE</span>, <span class="at">verbose =</span> <span class="cn">TRUE</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <section id="primer-ejemplo-municipios-de-castilla-la-mancha" class="level3" data-number="7.2.1">
 <h3 data-number="7.2.1" class="anchored" data-anchor-id="primer-ejemplo-municipios-de-castilla-la-mancha"><span class="header-section-number">7.2.1</span> Primer ejemplo: municipios de Castilla-La Mancha</h3>
-<p>En este primer ejemplo, exploramos cómo utilizar las funciones incluidas en <code>mapSpain</code> para representar los municipios de Castilla-La Mancha en diferentes colores, como muestra la <a href="#fig-example-muni-cl" class="quarto-xref">Figura&nbsp;<span>7.1</span></a>.</p>
+<p>En este primer ejemplo, exploramos cómo utilizar las funciones incluidas en <code>mapSpain</code> para representar los municipios de Castilla-La Mancha en diferentes colores, como muestra la <a href="#fig-example-muni-cl" class="quarto-xref">Figura&nbsp;<span>7.3</span></a>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mapSpain)</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>galicia <span class="ot">&lt;-</span> <span class="fu">esp_get_munic_siane</span>(<span class="at">region =</span> <span class="st">"Castilla-La Mancha"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Normalizar etiquetas</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">Provincia =</span> <span class="fu">esp_dict_translate</span>(ine.prov.name, <span class="st">"es"</span>)</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(galicia) <span class="sc">+</span></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> Provincia),</span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"grey70"</span></span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Provincias de Castilla-La Macha"</span>) <span class="sc">+</span></span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_discrete</span>(</span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">type =</span></span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>      <span class="fu">hcl.colors</span>(<span class="dv">5</span>, <span class="st">"Purples"</span>)</span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mapSpain)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>galicia <span class="ot">&lt;-</span> <span class="fu">esp_get_munic_siane</span>(<span class="at">region =</span> <span class="st">"Castilla-La Mancha"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Normalizar etiquetas</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">Provincia =</span> <span class="fu">esp_dict_translate</span>(ine.prov.name, <span class="st">"es"</span>)</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(galicia) <span class="sc">+</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> Provincia),</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"grey70"</span></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Provincias de Castilla-La Macha"</span>) <span class="sc">+</span></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_discrete</span>(</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">type =</span></span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>      <span class="fu">hcl.colors</span>(<span class="dv">5</span>, <span class="st">"Purples"</span>)</span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div id="fig-example-muni-cl" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -406,7 +561,7 @@ div.csl-indent {
 <img src="07-casos-estudio_files/figure-html/fig-example-muni-cl-1.png" class="img-fluid figure-img" width="1152">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-example-muni-cl-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figura&nbsp;7.1: Representación de los municipios de las cinco provincias de Castilla-La Mancha.
+Figura&nbsp;7.3: Representación de los municipios de las cinco provincias de Castilla-La Mancha.
 </figcaption>
 </figure>
 </div>
@@ -418,31 +573,31 @@ Figura&nbsp;7.1: Representación de los municipios de las cinco provincias de Ca
 <p>Cuando representamos mapas, es conveniente contar con una representación unívoca de las etiquetas identificadoras de CCAA y provincias. La función <code>esp_dict_region_code()</code> realiza la conversión entre textos y códigos, soportando varios esquemas de codificación (ISO2, NUTS y dos estándares del INE).</p>
 <p>Por otra parte, la función <code>esp_dict_transalate()</code> permite traducir las etiquetas a cinco idiomas distintos (castellano, inglés, catalán, gallego y vasco). Veamos algunos ejemplos.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>provs <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Murcia"</span>, <span class="st">"Sevilla"</span>, <span class="st">"Madrid"</span>, <span class="st">"Albacete"</span>, <span class="st">"Baleares"</span>)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Codificación de etiquetas</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">esp_dict_region_code</span>(provs, <span class="at">destination =</span> <span class="st">"nuts"</span>)  <span class="co"># Indicar esquema codif.</span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>provs <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Murcia"</span>, <span class="st">"Sevilla"</span>, <span class="st">"Madrid"</span>, <span class="st">"Albacete"</span>, <span class="st">"Baleares"</span>)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Codificación de etiquetas</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="fu">esp_dict_region_code</span>(provs, <span class="at">destination =</span> <span class="st">"nuts"</span>)  <span class="co"># Indicar esquema codif.</span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "ES62"  "ES618" "ES30"  "ES421" "ES53" </code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">esp_dict_region_code</span>(provs, <span class="at">destination =</span> <span class="st">"cpro"</span>) <span class="co"># Estándar INE</span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">esp_dict_region_code</span>(provs, <span class="at">destination =</span> <span class="st">"cpro"</span>) <span class="co"># Estándar INE</span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "30" "41" "28" "02" "07"</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">esp_dict_region_code</span>(provs, <span class="at">destination =</span> <span class="st">"iso2"</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">esp_dict_region_code</span>(provs, <span class="at">destination =</span> <span class="st">"iso2"</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "ES-MC" "ES-SE" "ES-MD" "ES-AB" "ES-IB"</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Traducciones</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">esp_dict_translate</span>(provs, <span class="at">lang =</span> <span class="st">"en"</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Traducciones</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">esp_dict_translate</span>(provs, <span class="at">lang =</span> <span class="st">"en"</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "Murcia"           "Seville"          "Madrid"           "Albacete"        
 [5] "Balearic Islands"</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">esp_dict_translate</span>(provs, <span class="at">lang =</span> <span class="st">"es"</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">esp_dict_translate</span>(provs, <span class="at">lang =</span> <span class="st">"es"</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "Murcia"   "Sevilla"  "Madrid"   "Albacete" "Baleares"</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">esp_dict_translate</span>(provs, <span class="at">lang =</span> <span class="st">"ga"</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">esp_dict_translate</span>(provs, <span class="at">lang =</span> <span class="st">"ga"</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "Murcia"         "Sevilla"        "Madrid"         "Albacete"      
 [5] "Illas Baleares"</code></pre>
@@ -470,10 +625,10 @@ Figura&nbsp;7.1: Representación de los municipios de las cinco provincias de Ca
 <li><code>esp_get_xxxx_siane()</code> (fuente: IGN).</li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>esp <span class="ot">&lt;-</span> <span class="fu">esp_get_country</span>(<span class="at">moveCAN =</span> <span class="cn">FALSE</span>) <span class="co"># No desplaza Canarias</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(esp) <span class="sc">+</span></span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">fill =</span> <span class="st">"#f9cd94"</span>) <span class="sc">+</span></span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_light</span>()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>esp <span class="ot">&lt;-</span> <span class="fu">esp_get_country</span>(<span class="at">moveCAN =</span> <span class="cn">FALSE</span>) <span class="co"># No desplaza Canarias</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(esp) <span class="sc">+</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">fill =</span> <span class="st">"#f9cd94"</span>) <span class="sc">+</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_light</span>()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div id="fig-map-spain-country" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -481,23 +636,23 @@ Figura&nbsp;7.1: Representación de los municipios de las cinco provincias de Ca
 <img src="07-casos-estudio_files/figure-html/fig-map-spain-country-1.png" class="img-fluid figure-img" width="960">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-map-spain-country-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figura&nbsp;7.2: Representación estándar del mapa de españa.
+Figura&nbsp;7.4: Representación estándar del mapa de españa.
 </figcaption>
 </figure>
 </div>
 </div>
 </div>
 <p>Se recomienda usar la opción <code>moveCAN = FALSE</code> siempre que se trabaje con imágenes, mapas interactivos o se vayan a realizar análisis espaciales.</p>
-<p>También es habitual añadir líneas adicionales en el mapa. Por ejemplo, la <a href="#fig-map-span-can-provs" class="quarto-xref">Figura&nbsp;<span>7.3</span></a> muestra un mapa similar al anterior, pero además incluyendo el límite entre las dos provincias de Canarias.</p>
+<p>También es habitual añadir líneas adicionales en el mapa. Por ejemplo, la <a href="#fig-map-span-can-provs" class="quarto-xref">Figura&nbsp;<span>7.5</span></a> muestra un mapa similar al anterior, pero además incluyendo el límite entre las dos provincias de Canarias.</p>
 <div class="cell" data-fig-with="10">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>esp_can <span class="ot">&lt;-</span> <span class="fu">esp_get_country</span>()</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>can_prov <span class="ot">&lt;-</span> <span class="fu">esp_get_can_provinces</span>()</span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>can_box <span class="ot">&lt;-</span> <span class="fu">esp_get_can_box</span>()</span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(esp_can) <span class="sc">+</span></span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>() <span class="sc">+</span></span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> can_prov) <span class="sc">+</span></span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> can_box) <span class="sc">+</span></span>
-<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_linedraw</span>()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>esp_can <span class="ot">&lt;-</span> <span class="fu">esp_get_country</span>()</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>can_prov <span class="ot">&lt;-</span> <span class="fu">esp_get_can_provinces</span>()</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>can_box <span class="ot">&lt;-</span> <span class="fu">esp_get_can_box</span>()</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(esp_can) <span class="sc">+</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>() <span class="sc">+</span></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> can_prov) <span class="sc">+</span></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> can_box) <span class="sc">+</span></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_linedraw</span>()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div id="fig-map-span-can-provs" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -505,7 +660,7 @@ Figura&nbsp;7.2: Representación estándar del mapa de españa.
 <img src="07-casos-estudio_files/figure-html/fig-map-span-can-provs-1.png" class="img-fluid figure-img" width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-map-span-can-provs-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figura&nbsp;7.3: Mapa político de España que muestra el límite entre las dos provincias de Canarias.
+Figura&nbsp;7.5: Mapa político de España que muestra el límite entre las dos provincias de Canarias.
 </figcaption>
 </figure>
 </div>
@@ -514,25 +669,25 @@ Figura&nbsp;7.3: Mapa político de España que muestra el límite entre las dos 
 </section>
 <section id="códigos-nuts" class="level3" data-number="7.2.4">
 <h3 data-number="7.2.4" class="anchored" data-anchor-id="códigos-nuts"><span class="header-section-number">7.2.4</span> Códigos NUTS</h3>
-<p>La <a href="https://ec.europa.eu/eurostat/documents/345175/629341/NUTS2021-NUTS2024.xlsx/2b35915f-9c14-6841-8197-353408c4522d?t=1717505289640">clasificación NUTS 2024</a> proporciona el listado de los códigos identificativos de las regiones a distintos niveles. La <a href="#fig-NUTS-codes-balearic-islands" class="quarto-xref">Figura&nbsp;<span>7.4</span></a> muestra el contenido del archivo para las tres regiones de menor nivel de Baleares. A su vez, la <a href="#fig-map-balearic-islands" class="quarto-xref">Figura&nbsp;<span>7.5</span></a> muestra el mapa ya representado.</p>
+<p>La <a href="https://ec.europa.eu/eurostat/documents/345175/629341/NUTS2021-NUTS2024.xlsx/2b35915f-9c14-6841-8197-353408c4522d?t=1717505289640">clasificación NUTS 2024</a> proporciona el listado de los códigos identificativos de las regiones a distintos niveles. La <a href="#fig-NUTS-codes-balearic-islands" class="quarto-xref">Figura&nbsp;<span>7.6</span></a> muestra el contenido del archivo para las tres regiones de menor nivel de Baleares. A su vez, la <a href="#fig-map-balearic-islands" class="quarto-xref">Figura&nbsp;<span>7.7</span></a> muestra el mapa ya representado.</p>
 <div id="fig-NUTS-codes-balearic-islands" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-NUTS-codes-balearic-islands-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="img/NUTS-Balearic-Islands.png" class="img-fluid figure-img" style="width:95.0%">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-NUTS-codes-balearic-islands-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figura&nbsp;7.4: Códigos de nivel NUTS 3 para las regiones de menor tamaño de Islas Baleares. Fuente: <a href="https://ec.europa.eu/eurostat/web/nuts" class="uri">https://ec.europa.eu/eurostat/web/nuts</a>.
+Figura&nbsp;7.6: Códigos de nivel NUTS 3 para las regiones de menor tamaño de Islas Baleares. Fuente: <a href="https://ec.europa.eu/eurostat/web/nuts" class="uri">https://ec.europa.eu/eurostat/web/nuts</a>.
 </figcaption>
 </figure>
 </div>
 <div class="cell" data-fig-with="10">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>nuts3_baleares <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"ES531"</span>, <span class="st">"ES532"</span>, <span class="st">"ES533"</span>)</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>nuts3_sf <span class="ot">&lt;-</span> <span class="fu">esp_get_nuts</span>(<span class="at">region =</span> nuts3_baleares)</span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(nuts3_sf) <span class="sc">+</span></span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> NAME_LATN)) <span class="sc">+</span></span>
-<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">fill =</span> <span class="st">"Baleares: NUTS3"</span>) <span class="sc">+</span></span>
-<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_viridis_d</span>() <span class="sc">+</span></span>
-<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>nuts3_baleares <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"ES531"</span>, <span class="st">"ES532"</span>, <span class="st">"ES533"</span>)</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>nuts3_sf <span class="ot">&lt;-</span> <span class="fu">esp_get_nuts</span>(<span class="at">region =</span> nuts3_baleares)</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(nuts3_sf) <span class="sc">+</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> NAME_LATN)) <span class="sc">+</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">fill =</span> <span class="st">"Baleares: NUTS3"</span>) <span class="sc">+</span></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_viridis_d</span>() <span class="sc">+</span></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div id="fig-map-balearic-islands" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -540,7 +695,7 @@ Figura&nbsp;7.4: Códigos de nivel NUTS 3 para las regiones de menor tamaño de 
 <img src="07-casos-estudio_files/figure-html/fig-map-balearic-islands-1.png" class="img-fluid figure-img" width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-map-balearic-islands-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figura&nbsp;7.5: Mapa de regiones de nivel NUTS 3 de las Islas Baleares.
+Figura&nbsp;7.7: Mapa de regiones de nivel NUTS 3 de las Islas Baleares.
 </figcaption>
 </figure>
 </div>
@@ -550,20 +705,20 @@ Figura&nbsp;7.5: Mapa de regiones de nivel NUTS 3 de las Islas Baleares.
 <section id="límites-políticos-comunidades-autónomas" class="level3" data-number="7.2.5">
 <h3 data-number="7.2.5" class="anchored" data-anchor-id="límites-políticos-comunidades-autónomas"><span class="header-section-number">7.2.5</span> Límites políticos: Comunidades Autónomas</h3>
 <div class="cell" data-fig-with="10">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>ccaa <span class="ot">&lt;-</span> <span class="fu">esp_get_ccaa</span>(<span class="at">ccaa =</span> <span class="fu">c</span>(</span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Catalunya"</span>,</span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Comunidad Valenciana"</span>,</span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Aragón"</span>,</span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Baleares"</span></span>
-<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>))</span>
-<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>ccaa <span class="ot">&lt;-</span> ccaa <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(</span>
-<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">ccaa_cat =</span> <span class="fu">esp_dict_translate</span>(ccaa<span class="sc">$</span>ine.ccaa.name, <span class="st">"ca"</span>)</span>
-<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(ccaa) <span class="sc">+</span></span>
-<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> ccaa_cat)) <span class="sc">+</span></span>
-<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">fill =</span> <span class="st">"Comunitats autònomes"</span>) <span class="sc">+</span></span>
-<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_discrete</span>(<span class="at">type =</span> <span class="fu">hcl.colors</span>(<span class="dv">4</span>, <span class="st">"Plasma"</span>))</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>ccaa <span class="ot">&lt;-</span> <span class="fu">esp_get_ccaa</span>(<span class="at">ccaa =</span> <span class="fu">c</span>(</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Catalunya"</span>,</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Comunidad Valenciana"</span>,</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Aragón"</span>,</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Baleares"</span></span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>))</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>ccaa <span class="ot">&lt;-</span> ccaa <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(</span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">ccaa_cat =</span> <span class="fu">esp_dict_translate</span>(ccaa<span class="sc">$</span>ine.ccaa.name, <span class="st">"ca"</span>)</span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(ccaa) <span class="sc">+</span></span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> ccaa_cat)) <span class="sc">+</span></span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">fill =</span> <span class="st">"Comunitats autònomes"</span>) <span class="sc">+</span></span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_discrete</span>(<span class="at">type =</span> <span class="fu">hcl.colors</span>(<span class="dv">4</span>, <span class="st">"Plasma"</span>))</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div id="fig-ccaa-east-spain" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -571,7 +726,7 @@ Figura&nbsp;7.5: Mapa de regiones de nivel NUTS 3 de las Islas Baleares.
 <img src="07-casos-estudio_files/figure-html/fig-ccaa-east-spain-1.png" class="img-fluid figure-img" width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ccaa-east-spain-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figura&nbsp;7.6: Mapa de varias CCAA en la zona este de España.
+Figura&nbsp;7.8: Mapa de varias CCAA en la zona este de España.
 </figcaption>
 </figure>
 </div>
@@ -579,17 +734,17 @@ Figura&nbsp;7.6: Mapa de varias CCAA en la zona este de España.
 </div>
 <p>Con el servicio <code>*_siane</code> (IGN), si se pasa entre los valores una entidad de orden superior (por ejemplo, una CCAA cuando el resto son provincias), entonces se obtienen todas las entidades del mismo nivel que el resto de la lista dentro de la entidad de orden superior. En el siguiente ejemplo, <code>Castilla-La Mancha</code> es una CCAA y el resto son provincias.</p>
 <div class="cell" data-fig-with="10">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>provs <span class="ot">&lt;-</span> <span class="fu">esp_get_prov_siane</span>(<span class="fu">c</span>(</span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Castilla-La Mancha"</span>, <span class="st">"Jaén"</span>,</span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Murcia"</span>, <span class="st">"Alicante"</span>, <span class="st">"Valencia"</span></span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>))</span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(provs) <span class="sc">+</span></span>
-<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> prov.shortname.es),</span>
-<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">alpha =</span> <span class="fl">0.9</span></span>
-<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_discrete</span>(<span class="at">type =</span> <span class="fu">hcl.colors</span>(<span class="dv">12</span>, <span class="st">"Cividis"</span>)) <span class="sc">+</span></span>
-<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">fill =</span> <span class="st">"Provincias"</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>provs <span class="ot">&lt;-</span> <span class="fu">esp_get_prov_siane</span>(<span class="fu">c</span>(</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Castilla-La Mancha"</span>, <span class="st">"Jaén"</span>,</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Murcia"</span>, <span class="st">"Alicante"</span>, <span class="st">"Valencia"</span></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>))</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(provs) <span class="sc">+</span></span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> prov.shortname.es),</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">alpha =</span> <span class="fl">0.9</span></span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_discrete</span>(<span class="at">type =</span> <span class="fu">hcl.colors</span>(<span class="dv">12</span>, <span class="st">"Cividis"</span>)) <span class="sc">+</span></span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">fill =</span> <span class="st">"Provincias"</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div id="fig-ccaa-provs" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -597,7 +752,7 @@ Figura&nbsp;7.6: Mapa de varias CCAA en la zona este de España.
 <img src="07-casos-estudio_files/figure-html/fig-ccaa-provs-1.png" class="img-fluid figure-img" width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ccaa-provs-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figura&nbsp;7.7: Varias provincias españoas, incluyendo todas las de Andalucía.
+Figura&nbsp;7.9: Varias provincias españoas, incluyendo todas las de Andalucía.
 </figcaption>
 </figure>
 </div>
@@ -607,29 +762,29 @@ Figura&nbsp;7.7: Varias provincias españoas, incluyendo todas las de Andalucía
 <section id="límities-políticos-municipios" class="level3" data-number="7.2.6">
 <h3 data-number="7.2.6" class="anchored" data-anchor-id="límities-políticos-municipios"><span class="header-section-number">7.2.6</span> Límities políticos: municipios</h3>
 <div class="cell" data-fig-with="10">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>munic <span class="ot">&lt;-</span> <span class="fu">esp_get_munic</span>(<span class="at">region =</span> <span class="st">"Albacete"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Datos de ejemplo: Población INE</span></span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(mapSpain<span class="sc">::</span>pobmun19, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"cpro"</span>, <span class="st">"cmun"</span>))</span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(munic) <span class="sc">+</span></span>
-<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> pob19), <span class="at">alpha =</span> <span class="fl">0.9</span>, <span class="at">color =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_gradientn</span>(</span>
-<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">colors =</span> <span class="fu">hcl.colors</span>(<span class="dv">100</span>, <span class="st">"Inferno"</span>),</span>
-<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">n.breaks =</span> <span class="dv">10</span>,</span>
-<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">label_comma</span>(),</span>
-<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">guide =</span> <span class="fu">guide_legend</span>()</span>
-<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">"Habitantes"</span>,</span>
-<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Población en Albacete"</span>,</span>
-<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"Datos INE (2019)"</span></span>
-<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_void</span>() <span class="sc">+</span></span>
-<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
-<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.background =</span> <span class="fu">element_rect</span>(<span class="st">"grey80"</span>),</span>
-<span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">text =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>),</span>
-<span id="cb23-21"><a href="#cb23-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> .<span class="dv">5</span>),</span>
-<span id="cb23-22"><a href="#cb23-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> .<span class="dv">5</span>)</span>
-<span id="cb23-23"><a href="#cb23-23" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>munic <span class="ot">&lt;-</span> <span class="fu">esp_get_munic</span>(<span class="at">region =</span> <span class="st">"Albacete"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Datos de ejemplo: Población INE</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(mapSpain<span class="sc">::</span>pobmun19, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"cpro"</span>, <span class="st">"cmun"</span>))</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(munic) <span class="sc">+</span></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> pob19), <span class="at">alpha =</span> <span class="fl">0.9</span>, <span class="at">color =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_gradientn</span>(</span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">colors =</span> <span class="fu">hcl.colors</span>(<span class="dv">100</span>, <span class="st">"Inferno"</span>),</span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">n.breaks =</span> <span class="dv">10</span>,</span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">label_comma</span>(),</span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">guide =</span> <span class="fu">guide_legend</span>()</span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">"Habitantes"</span>,</span>
+<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Población en Albacete"</span>,</span>
+<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"Datos INE (2019)"</span></span>
+<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb31-17"><a href="#cb31-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_void</span>() <span class="sc">+</span></span>
+<span id="cb31-18"><a href="#cb31-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb31-19"><a href="#cb31-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.background =</span> <span class="fu">element_rect</span>(<span class="st">"grey80"</span>),</span>
+<span id="cb31-20"><a href="#cb31-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">text =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>),</span>
+<span id="cb31-21"><a href="#cb31-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> .<span class="dv">5</span>),</span>
+<span id="cb31-22"><a href="#cb31-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> .<span class="dv">5</span>)</span>
+<span id="cb31-23"><a href="#cb31-23" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div id="fig-munic-quant" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -637,19 +792,19 @@ Figura&nbsp;7.7: Varias provincias españoas, incluyendo todas las de Andalucía
 <img src="07-casos-estudio_files/figure-html/fig-munic-quant-1.png" class="img-fluid figure-img" width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-munic-quant-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figura&nbsp;7.8: Representación de la población en municipios de la provincia de Albacete.
+Figura&nbsp;7.10: Representación de la población en municipios de la provincia de Albacete.
 </figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>En el <a href="https://socviz.co/maps.html#statebins">apartado 7.3</a> del libro sobre visualización de datos de K. Healy <span class="citation" data-cites="healy2019">(<a href="references.html#ref-healy2019" role="doc-biblioref">Healy, 2019</a>)</span> se pueden encontrar una representación esquemática más legible de las regiones de un país, llamada <em>statebins</em>, asociada a una variable cuantitativa. Esta representación esquemática es más apropiada cuando el foco de interés es comparar y mostrar resultados cuantitativos entre diferentes regiones sin que importe tanto realizar una representación gráfica fidedigna. La <a href="#fig-statebins-hex-spain" class="quarto-xref">Figura&nbsp;<span>7.9</span></a> y <a href="#fig-statebins-cuad-spain" class="quarto-xref">Figura&nbsp;<span>7.10</span></a> muestran dos ejemplos con este paquete para el mapa de España, usando hexágonos y cuadrados, respectivamente.</p>
+<p>En el <a href="https://socviz.co/maps.html#statebins">apartado 7.3</a> del libro sobre visualización de datos de K. Healy <span class="citation" data-cites="healy2019">(<a href="references.html#ref-healy2019" role="doc-biblioref">Healy, 2019</a>)</span> se pueden encontrar una representación esquemática más legible de las regiones de un país, llamada <em>statebins</em>, asociada a una variable cuantitativa. Esta representación esquemática es más apropiada cuando el foco de interés es comparar y mostrar resultados cuantitativos entre diferentes regiones sin que importe tanto realizar una representación gráfica fidedigna. La <a href="#fig-statebins-hex-spain" class="quarto-xref">Figura&nbsp;<span>7.11</span></a> y <a href="#fig-statebins-cuad-spain" class="quarto-xref">Figura&nbsp;<span>7.12</span></a> muestran dos ejemplos con este paquete para el mapa de España, usando hexágonos y cuadrados, respectivamente.</p>
 <div class="cell" data-fig-with="10">
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>hex <span class="ot">&lt;-</span> <span class="fu">esp_get_hex_ccaa</span>()</span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(hex) <span class="sc">+</span></span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>() <span class="sc">+</span></span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> iso2.ccaa.code)) <span class="sc">+</span></span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_void</span>()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>hex <span class="ot">&lt;-</span> <span class="fu">esp_get_hex_ccaa</span>()</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(hex) <span class="sc">+</span></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>() <span class="sc">+</span></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> iso2.ccaa.code)) <span class="sc">+</span></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_void</span>()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning in st_point_on_surface.sfc(sf::st_zm(x)): st_point_on_surface may not
 give correct results for longitude/latitude data</code></pre>
@@ -661,18 +816,18 @@ give correct results for longitude/latitude data</code></pre>
 <img src="07-casos-estudio_files/figure-html/fig-statebins-hex-spain-1.png" class="img-fluid figure-img" width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-statebins-hex-spain-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figura&nbsp;7.9: Representación con <em>statebins</em> hexagonales del mapa de España.
+Figura&nbsp;7.11: Representación con <em>statebins</em> hexagonales del mapa de España.
 </figcaption>
 </figure>
 </div>
 </div>
 </div>
 <div class="cell" data-fig-with="10">
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>cuad <span class="ot">&lt;-</span> <span class="fu">esp_get_grid_prov</span>()</span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(cuad) <span class="sc">+</span></span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>() <span class="sc">+</span></span>
-<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> iso2.prov.code)) <span class="sc">+</span></span>
-<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_void</span>()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>cuad <span class="ot">&lt;-</span> <span class="fu">esp_get_grid_prov</span>()</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(cuad) <span class="sc">+</span></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>() <span class="sc">+</span></span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> iso2.prov.code)) <span class="sc">+</span></span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_void</span>()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning in st_point_on_surface.sfc(sf::st_zm(x)): st_point_on_surface may not
 give correct results for longitude/latitude data</code></pre>
@@ -684,7 +839,7 @@ give correct results for longitude/latitude data</code></pre>
 <img src="07-casos-estudio_files/figure-html/fig-statebins-cuad-spain-1.png" class="img-fluid figure-img" width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-statebins-cuad-spain-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figura&nbsp;7.10: Representación con <em>statebins</em> cuadrados del mapa de España.
+Figura&nbsp;7.12: Representación con <em>statebins</em> cuadrados del mapa de España.
 </figcaption>
 </figure>
 </div>
@@ -695,24 +850,24 @@ Figura&nbsp;7.10: Representación con <em>statebins</em> cuadrados del mapa de E
 <h3 data-number="7.2.7" class="anchored" data-anchor-id="mapas-dinámicos-con-leaflet"><span class="header-section-number">7.2.7</span> Mapas dinámicos con Leaflet</h3>
 <p>Los proveedores de diferentes organismos públicos se han conseugido del plug-in para Leaflet <a href="https://dieghernan.github.io/leaflet-providersESP/visor/">leaflet-providerESP</a>.</p>
 <div class="cell column-page-right" data-fig-with="12">
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>stations <span class="ot">&lt;-</span> <span class="fu">esp_get_railway</span>(<span class="at">spatialtype =</span> <span class="st">"point"</span>, <span class="at">epsg =</span> <span class="dv">4326</span>)</span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(leaflet)</span>
-<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="fu">leaflet</span>(stations, <span class="at">elementId  =</span> <span class="st">"railways"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">addProviderEspTiles</span>(<span class="st">"IGNBase.Gris"</span>, <span class="at">group =</span> <span class="st">"Base"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">addProviderEspTiles</span>(<span class="st">"MTN"</span>, <span class="at">group =</span> <span class="st">"MTN"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">addProviderEspTiles</span>(<span class="st">"RedTransporte.Ferroviario"</span>,</span>
-<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>   <span class="at">group =</span> <span class="st">"Lineas Ferroviarias"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">addMarkers</span>(<span class="at">group =</span> <span class="st">"Estaciones"</span>,</span>
-<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">popup =</span> <span class="fu">sprintf</span>(</span>
-<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"&lt;strong&gt;%s&lt;/strong&gt;"</span>,</span>
-<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>    stations<span class="sc">$</span>rotulo) <span class="sc">%&gt;%</span></span>
-<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>      <span class="fu">lapply</span>(htmltools<span class="sc">::</span>HTML)</span>
-<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span></span>
-<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">addLayersControl</span>(</span>
-<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">baseGroups =</span> <span class="fu">c</span>(<span class="st">"Base"</span>, <span class="st">"MTN"</span>),</span>
-<span id="cb28-16"><a href="#cb28-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">overlayGroups =</span> <span class="fu">c</span>(<span class="st">"Lineas Ferroviarias"</span>, <span class="st">"Estaciones"</span>),</span>
-<span id="cb28-17"><a href="#cb28-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">options =</span> <span class="fu">layersControlOptions</span>(<span class="at">collapsed =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb28-18"><a href="#cb28-18" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>stations <span class="ot">&lt;-</span> <span class="fu">esp_get_railway</span>(<span class="at">spatialtype =</span> <span class="st">"point"</span>, <span class="at">epsg =</span> <span class="dv">4326</span>)</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(leaflet)</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="fu">leaflet</span>(stations, <span class="at">elementId  =</span> <span class="st">"railways"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">addProviderEspTiles</span>(<span class="st">"IGNBase.Gris"</span>, <span class="at">group =</span> <span class="st">"Base"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">addProviderEspTiles</span>(<span class="st">"MTN"</span>, <span class="at">group =</span> <span class="st">"MTN"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">addProviderEspTiles</span>(<span class="st">"RedTransporte.Ferroviario"</span>,</span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>   <span class="at">group =</span> <span class="st">"Lineas Ferroviarias"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">addMarkers</span>(<span class="at">group =</span> <span class="st">"Estaciones"</span>,</span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">popup =</span> <span class="fu">sprintf</span>(</span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"&lt;strong&gt;%s&lt;/strong&gt;"</span>,</span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a>    stations<span class="sc">$</span>rotulo) <span class="sc">%&gt;%</span></span>
+<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a>      <span class="fu">lapply</span>(htmltools<span class="sc">::</span>HTML)</span>
+<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span></span>
+<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">addLayersControl</span>(</span>
+<span id="cb36-15"><a href="#cb36-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">baseGroups =</span> <span class="fu">c</span>(<span class="st">"Base"</span>, <span class="st">"MTN"</span>),</span>
+<span id="cb36-16"><a href="#cb36-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">overlayGroups =</span> <span class="fu">c</span>(<span class="st">"Lineas Ferroviarias"</span>, <span class="st">"Estaciones"</span>),</span>
+<span id="cb36-17"><a href="#cb36-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">options =</span> <span class="fu">layersControlOptions</span>(<span class="at">collapsed =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb36-18"><a href="#cb36-18" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div id="fig-leaflet-spain" class="cell-output-display quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-leaflet-spain-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -720,7 +875,7 @@ Figura&nbsp;7.10: Representación con <em>statebins</em> cuadrados del mapa de E
 <script type="application/json" data-for="railways">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addTiles","args":["https://www.ign.es/wmts/ign-base?service=WMTS&request=GetTile&version=1.0.0&format=image/jpeg&layer=IGNBase-gris&style=default&tilematrixset=GoogleMapsCompatible&tilematrix={z}&tilerow={y}&tilecol={x}",null,"Base",{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"minzoom":0,"maxzoom":18,"tilesize":256,"errortileurl":"","nowrap":false,"zoomoffset":0,"zoomreverse":false,"zindex":1,"detectretina":false,"attribution":"CC BY 4.0 scne.es. Sistema Geogr&aacute;fico Nacional <a href='http://www.ign.es'>IGN<\/a>"}]},{"method":"addTiles","args":["https://ign.es/wmts/mapa-raster?service=WMTS&request=GetTile&version=1.0.0&format=image/jpeg&layer=MTN&style=default&tilematrixset=GoogleMapsCompatible&tilematrix={z}&tilerow={y}&tilecol={x}",null,"MTN",{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"minzoom":"4","maxzoom":18,"tilesize":256,"errortileurl":"","nowrap":false,"zoomoffset":0,"zoomreverse":false,"zindex":1,"detectretina":false,"attribution":"<a href='http://www.ign.es/'>Infraestructura de Datos Espaciales de Espa&ntilde;a (IDEE)<\/a>"}]},{"method":"addWMSTiles","args":["https://servicios.idee.es/wms-inspire/transportes",null,"Lineas Ferroviarias",{"styles":"","format":"image/png","transparent":"true","version":"1.1.1","errortileurl":"","nowrap":false,"detectretina":false,"attribution":"Sistema Geogr&aacute;fico Nacional <a href='http://www.scne.es'>SCNE<\/a>","layers":"TN.RailTransportNetwork.RailwayLink"}]},{"method":"addMarkers","args":[[42.36817572600006,42.23448249000006,43.35037517000006,43.48843134700007,42.82531675000007,39.57651037400007,39.56786683200005,39.72121992900003,43.27316647000004,39.78582684300005,39.76736332700006,42.86266387100005,43.25717867900005,42.24647742100007,42.25432425900004,43.31318431100004,42.68034543400006,43.21842259700003,43.01156292400003,42.44547199500005,42.84353684900003,42.33789137600007,43.56842937800008,43.35482738500008,43.45821198700003,43.37119058100006,43.41231488900007,43.35391716600003,42.80558805000004,42.59589044300003,42.54417835800007,41.57716055000003,42.51984932400006,38.96995215400005,38.97729610000005,38.99399706000003,38.97630830000003,38.83783086000005,41.98257333000004,39.17430265300004,38.89507095000005,42.13353545200005,41.51135236000005,41.45058428800007,41.35124593900008,41.30719354200005,41.55808071000007,40.66318161000004,40.24234223900004,41.23969776900003,41.15528282600008,39.67355510000004,39.62273780000004,39.42618050500005,39.45626431000005,39.53299174600005,39.48806797300006,41.75295465100004,41.36855696100002,41.92008984400007,39.38990311500004,39.36536736500005,41.92825928400003,37.65570444400004,37.60366961000005,37.41011708000008,37.38531972600003,37.18320652000006,36.54243276000005,36.51935076200004,36.12910440900004,38.34893498900004,42.43077735100007,42.60040876400006,42.45883396600004,42.19834602100008,42.00839011200003,42.46211665500005,40.96260367700006,41.64877679600005,41.56249684800008,41.67219195700005,40.54669027000006,38.42122800200008,38.32175445300004,41.11856863400004,41.61712916500005,41.64593129800005,41.72161229000005,39.00244120000008,40.47343982100006,39.96609934100007,37.17615976500008,36.83810564300006,40.93363066000006,36.69619001200005,36.71151746000004,40.64845660000003,40.64554783300008,40.06483957200004,40.34197120500005,40.32889578400005,40.24099330000007,40.02867552400005,40.03426256200004,39.99108816000006,39.86263770000005,38.86283551000002,37.26002992300005,38.69990346600008,38.69005026700006,38.91911803100004,38.99773394500005,38.27067560200004,37.97425150900006,37.89426735100005,37.77993947000004,43.54064227900005,40.44959583100007,40.51490780000006,40.62659748000004,40.74507856000002,40.82344354000003,41.30188365400005,42.04516736200003,42.05141204700004,42.07287703000003,42.27718108300007,42.34973481400004,42.83845139800007,43.15207485500008,43.26890774100008,43.29993840000003,43.12076786700004,43.30722823300005,43.36082459400006,43.48832956000007,43.34591528700003,42.83506507900006,43.31013378200004,43.20731154300006,43.00669695300007,42.90410345600003,43.31890485300005,42.16436449700007,41.79060316400006,41.74200207400003,41.72153506000006,41.51809958300004,41.97473798000004,42.75534957000008,42.39748096000005,42.43724676800008,41.75461452500008,42.29797810500003,41.82401269700006,41.82747158400008,41.46985760800004,41.58725590900008,41.57655145700005,41.18611928700005,41.18786690100006,41.10152113500004,40.93653723900007,40.04620572100004,39.59067310000006,39.58864100000005,39.07885900000008,39.54069703000005,38.77523201000002,38.62248621700007,37.64971570700004,37.20850018400006,37.43356664100003,37.04749277100007,37.09086586000006,37.60745902900004,37.19016555300004,39.94398352100006,40.03474517700005,39.93210513800005,39.91761696500004,39.95501205800008,40.58837775000006,38.92531906300007,39.17300101500007,38.04285599000008,38.65643649000003,37.99758562000005,37.93770868500008,37.82470884700007,38.68911677200003,41.14460930600006,41.32707324000006,37.99736447800007,43.41235238200005,43.45353986100008,40.60548726000007,40.24849129700004,41.19210547600005,40.40460060000004,41.19393537100007,43.56372941200004,41.39749415700004,41.42372687200003,38.99002756100003,37.96715582400003,37.33025905500006,41.96389121100003,40.05039198600008,39.46675550400005,39.44066346000005,36.68010393500003,43.30793983000007],[-3.677539631999934,-8.713094929999954,-1.786326409999958,-8.230400926999948,-1.661119463999967,2.653534635000028,3.208220100000062,2.91176820000004,-8.226929839999968,2.698658909000073,3.025155174000076,-8.549608478999971,-2.923975451999979,0.9616723510000611,2.95311791000006,-1.981390536999925,-2.952504272999931,-2.737960757999929,-7.546263860999943,-8.618571621999934,-2.674880903999963,-7.859546773999966,-5.916856228999961,-8.406934171999978,-3.819986140999958,-5.846106726999949,-2.728769002999968,-4.051945683999975,-5.626534099999958,-5.582349337999972,-6.597682583999926,1.631642240000076,-7.509818720999931,-5.801709909999943,-3.908854099999928,-0.5204109899999594,-0.1803889999999342,0.09981825200003414,2.820709344000022,-0.2589581569999382,-6.974148130999936,-0.4096950329999345,-5.751027215999954,2.249814394000055,-1.638889591999941,-4.914553443999978,2.105224143000044,-4.684980129999929,-3.702737701999979,-0.03750377199997956,1.118433291000031,-0.272726539999951,-0.5896671999999512,-7.236524661999965,-6.385495269999979,-0.5706674309999471,-0.3352737839999804,-2.46865416199995,2.172080459000028,-4.493122058999973,-3.205159615999946,-0.4140082079999274,2.247267085000033,-5.532775624999942,-0.9760407599999326,-1.582674205999979,-5.978156518999981,-3.606996049999964,-4.623338629999978,-6.284040356999981,-5.465220601999931,-0.4854442909999648,1.924582779000048,-8.749295519999976,-2.44937170399993,2.190060301000074,-4.539500804999932,-6.047903833999953,-5.653057657999966,-0.8868243649999386,2.011629853000045,-3.692694697999968,-3.635536059999936,-6.407220350999978,-6.773300254999981,1.258318365000036,0.6455299260000515,-4.717454519999933,1.827777956000034,-3.376602099999957,-3.681580974999974,-4.837678816999926,-5.788387967999938,-2.450015893999932,-4.113748889999954,-6.120107527999949,-4.431588289999979,-3.761991399999943,-3.182166403999929,-2.137656611999944,-1.115490275999946,-3.869283396999947,-3.769341499999939,-6.093413473999931,-3.619956158999969,-0.04494166799997856,-4.011090899999942,-1.099164935999966,-6.950360469999964,-0.4753782279999541,-4.115422204999959,-6.34174988999996,-1.854579698999942,-0.6983523429999536,-1.128088050999963,-4.775897708999935,-3.790932249999969,-5.667011489999936,-3.502988221999942,-3.877975599999957,-4.01106507999998,-4.056093420999957,-3.962123199999951,-4.712542509999935,-6.637803047999967,-8.649718262999954,-8.622605929999963,-8.602903721999951,-8.587387421999949,-5.527700080999978,-5.839171284999964,-5.624235311999939,-5.688971369999933,-5.570257255999934,-5.837368469999944,-5.967374890999963,-6.107526459999974,-4.012372400999936,-4.191383372999951,-3.037923425999963,-3.100270660999968,-3.016285152999956,-2.19168704599997,-1.918959196999936,-1.669523516999959,-1.173231957999974,-1.169744566999952,-1.017711979999945,-0.6325125809999577,-0.5367567499999382,-0.5069529529999386,2.154860160000055,3.144700589000024,2.662821399000052,2.15427016700005,1.884727849000058,1.764008577000027,1.950038580000069,2.547175305000053,2.287122676000024,1.465634240000043,1.524619509000047,0.6770401990000323,0.8402191820000553,0.05066872800006195,-0.457365599999946,-0.3307040999999344,-0.5119187999999326,-1.178856459999963,-0.9581374999999639,-0.8948389989999441,-0.7992688529999441,-2.918660391999936,-3.309021694999956,-4.722790863999933,-4.722396275999927,-5.731636859999981,-6.867648752999969,-6.08740858699997,-3.899012004999975,-3.874975440999947,-3.857682379999972,-3.732252762999963,-3.123449216999973,-1.625437786999953,-3.23175370499996,-3.605904539999926,-3.443999470999927,-3.813479129999962,-4.77053961699994,-4.965571294999961,-5.306091992999939,-2.498909954999931,-1.791279409999959,-1.008172740999953,-5.704921218999971,-5.817440783999928,-6.825882489999969,-3.835756956999944,1.272171869000033,-3.689188399999978,-0.3229226759999619,-5.714411527999971,2.182636950000074,2.217486062000035,-0.1560104849999675,-1.206824099999949,-4.811448670999937,-4.428262148999977,-2.171596488999967,-0.3913177159999464,-0.364428969999949,-4.49149261499997,-2.993109539999978],null,null,"Estaciones",{"interactive":true,"draggable":false,"keyboard":true,"title":"","alt":"","zIndexOffset":0,"opacity":1,"riseOnHover":false,"riseOffset":250},["<strong>Burgos<\/strong>","<strong>Vigo<\/strong>","<strong>Irun<\/strong>","<strong>Ferrol<\/strong>","<strong>Pamplona/Iruña<\/strong>","<strong>Palma<\/strong>","<strong>Manacor<\/strong>","<strong>Inca<\/strong>","<strong>Betanzos<\/strong>","<strong>Sóller<\/strong>","<strong>Sa Pobla<\/strong>","<strong>Santiago de Compostela<\/strong>","<strong>Bilbao<\/strong>","<strong>La Pobla de Segur<\/strong>","<strong>Figueres<\/strong>","<strong>Donostia/San Sebastián<\/strong>","<strong>Miranda de Ebro<\/strong>","<strong>Amorebieta<\/strong>","<strong>Lugo<\/strong>","<strong>Pontevedra<\/strong>","<strong>Vitoria-Gasteiz<\/strong>","<strong>Ourense<\/strong>","<strong>Avilés<\/strong>","<strong>A Coruña<\/strong>","<strong>Santander<\/strong>","<strong>Oviedo<\/strong>","<strong>Bermeo<\/strong>","<strong>Torrelavega<\/strong>","<strong>La Robla<\/strong>","<strong>León<\/strong>","<strong>Ponferrada<\/strong>","<strong>Igualada<\/strong>","<strong>Monforte de Lemos<\/strong>","<strong>Villanueva de la Serena<\/strong>","<strong>Ciudad Real<\/strong>","<strong>Xàtiva<\/strong>","<strong>Gandia<\/strong>","<strong>Dénia<\/strong>","<strong>Girona<\/strong>","<strong>Cullera<\/strong>","<strong>Badajoz<\/strong>","<strong>Huesca<\/strong>","<strong>Zamora<\/strong>","<strong>Badalona<\/strong>","<strong>Calatayud<\/strong>","<strong>Medina del Campo<\/strong>","<strong>Sabadell<\/strong>","<strong>Ávila<\/strong>","<strong>Pinto<\/strong>","<strong>Caspe<\/strong>","<strong>Reus<\/strong>","<strong>Sagunto/Sagunt<\/strong>","<strong>Llíria<\/strong>","<strong>Valencia de Alcántara<\/strong>","<strong>Cáceres<\/strong>","<strong>Riba-roja de Túria<\/strong>","<strong>Valencia<\/strong>","<strong>Soria<\/strong>","<strong>Barcelona<\/strong>","<strong>Venta de Baños<\/strong>","<strong>Alcázar de San Juan<\/strong>","<strong>Silla<\/strong>","<strong>Vic<\/strong>","<strong>Lora del Río<\/strong>","<strong>Cartagena<\/strong>","<strong>Águilas<\/strong>","<strong>Sevilla<\/strong>","<strong>Granada<\/strong>","<strong>Fuengirola<\/strong>","<strong>Cádiz<\/strong>","<strong>Algeciras<\/strong>","<strong>Alicante/Alacant<\/strong>","<strong>Puigcerdà<\/strong>","<strong>Vilagarcía de Arousa<\/strong>","<strong>Logroño<\/strong>","<strong>Ripoll<\/strong>","<strong>Palencia<\/strong>","<strong>Astorga<\/strong>","<strong>Salamanca<\/strong>","<strong>Zaragoza<\/strong>","<strong>Terrassa<\/strong>","<strong>Aranda de Duero<\/strong>","<strong>Alcobendas-S.S. de los Reyes<\/strong>","<strong>Zafra<\/strong>","<strong>Jerez de los Caballeros<\/strong>","<strong>Tarragona<\/strong>","<strong>Lleida<\/strong>","<strong>Valladolid<\/strong>","<strong>Manresa<\/strong>","<strong>Manzanares<\/strong>","<strong>Madrid-Chamartín<\/strong>","<strong>Talavera de la Reina<\/strong>","<strong>Utrera<\/strong>","<strong>Almería<\/strong>","<strong>Segovia<\/strong>","<strong>Jerez de la Frontera<\/strong>","<strong>Málaga<\/strong>","<strong>Colmenar Viejo<\/strong>","<strong>Guadalajara<\/strong>","<strong>Cuenca<\/strong>","<strong>Teruel<\/strong>","<strong>Móstoles-El Soto<\/strong>","<strong>Parla<\/strong>","<strong>Plasencia<\/strong>","<strong>Aranjuez<\/strong>","<strong>Castellón de la Plana/Castelló de la Plana<\/strong>","<strong>Toledo<\/strong>","<strong>Almansa<\/strong>","<strong>Huelva<\/strong>","<strong>Alcoy/Alcoi<\/strong>","<strong>Puertollano<\/strong>","<strong>Mérida<\/strong>","<strong>Albacete<\/strong>","<strong>Elche/Elx<\/strong>","<strong>Murcia-del Carmen<\/strong>","<strong>Córdoba<\/strong>","<strong>Jaén<\/strong>","<strong>Gijón/Xixón<\/strong>","<strong>San Fernando de Henares<\/strong>","<strong>Pinar de las Rozas<\/strong>","<strong>Villalba<\/strong>","<strong>Cercedilla<\/strong>","<strong>Los Cotos<\/strong>","<strong>Olmedo-Alta Velocidad<\/strong>","<strong>Puebla de Sanabria<\/strong>","<strong>Tui<\/strong>","<strong>Guillarei<\/strong>","<strong>Redondela<\/strong>","<strong>Arcade<\/strong>","<strong>Matallana<\/strong>","<strong>La Pola de Lena<\/strong>","<strong>Laviana<\/strong>","<strong>El Entrego<\/strong>","<strong>Collanzo<\/strong>","<strong>Soto del Rey<\/strong>","<strong>Trubia<\/strong>","<strong>Pravia<\/strong>","<strong>Sierrapando<\/strong>","<strong>Mataporquera<\/strong>","<strong>Muskiz<\/strong>","<strong>Aranguren<\/strong>","<strong>Orduña<\/strong>","<strong>Altsasu/Alsasua<\/strong>","<strong>Pasaia<\/strong>","<strong>Castejón<\/strong>","<strong>Cabañas de Ebro<\/strong>","<strong>Grisén<\/strong>","<strong>Casetas<\/strong>","<strong>Fuentes de Ebro<\/strong>","<strong>Tardienta<\/strong>","<strong>Canfranc<\/strong>","<strong>Núria<\/strong>","<strong>Portbou<\/strong>","<strong>Massanes<\/strong>","<strong>Ribes de Freser<\/strong>","<strong>Sallent<\/strong>","<strong>Súria<\/strong>","<strong>Castellbisbal<\/strong>","<strong>Arenys de Mar<\/strong>","<strong>Granollers<\/strong>","<strong>Roda de Barà<\/strong>","<strong>Sant Vicenç de Calders<\/strong>","<strong>Móra la Nova<\/strong>","<strong>Vandellós<\/strong>","<strong>Benicasim/Benicàssim<\/strong>","<strong>Bétera<\/strong>","<strong>Rafelbunyol<\/strong>","<strong>Villanueva de Castellón<\/strong>","<strong>Utiel-Requena<\/strong>","<strong>La Encina<\/strong>","<strong>Villena- Alta Velocidad<\/strong>","<strong>Los Nietos<\/strong>","<strong>Huéneja-Dólar<\/strong>","<strong>Moreda<\/strong>","<strong>Bobadilla<\/strong>","<strong>Antequera-Santa Ana<\/strong>","<strong>Los Rosales<\/strong>","<strong>Huelva-Puerto<\/strong>","<strong>Monfragüe<\/strong>","<strong>Villaluenga-Yuncler<\/strong>","<strong>La Sagra<\/strong>","<strong>Algodor<\/strong>","<strong>Castillejo-Añover<\/strong>","<strong>Guadalajara-Yebes<\/strong>","<strong>Chinchilla de Monte-Aragón<\/strong>","<strong>Cinco Casas<\/strong>","<strong>Linares-Baeza<\/strong>","<strong>Santa Cruz de Mudela<\/strong>","<strong>Espelúy<\/strong>","<strong>Mirabueno<\/strong>","<strong>Almodóvar del Río<\/strong>","<strong>Almorchón<\/strong>","<strong>Torralba<\/strong>","<strong>Ateca<\/strong>","<strong>El Reguerón<\/strong>","<strong>El Berrón<\/strong>","<strong>Villabona de Asturias<\/strong>","<strong>Fuentes de Oñoro<\/strong>","<strong>Humanes<\/strong>","<strong>Camp de Tarragona<\/strong>","<strong>Madrid-Puerta de Atocha<\/strong>","<strong>Samper de Calanda<\/strong>","<strong>Puerto de Gijón/Xixón<\/strong>","<strong>Barcelona-Sants<\/strong>","<strong>Barcelona-França<\/strong>","<strong>Gandia-Port<\/strong>","<strong>Murcia-Mercancias<\/strong>","<strong>Puente Genil-Herrera<\/strong>","<strong>Magaz<\/strong>","<strong>Cuenca-Fernando Zóbel<\/strong>","<strong>Valencia-San Isidre<\/strong>","<strong>Valencia-Joaquín Sorolla<\/strong>","<strong>Los Prados<\/strong>","<strong>Santurtzi<\/strong>"],null,null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]},{"method":"addLayersControl","args":[["Base","MTN"],["Lineas Ferroviarias","Estaciones"],{"collapsed":false,"autoZIndex":true,"position":"topright"}]}],"limits":{"lat":[36.12910440900004,43.56842937800008],"lng":[-8.749295519999976,3.208220100000062]}},"evals":[],"jsHooks":[]}</script>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-leaflet-spain-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figura&nbsp;7.11: Mapa dinámico de ubicaciones de estaciones de tren en España.
+Figura&nbsp;7.13: Mapa dinámico de ubicaciones de estaciones de tren en España.
 </figcaption>
 </figure>
 </div>
@@ -729,62 +884,62 @@ Figura&nbsp;7.11: Mapa dinámico de ubicaciones de estaciones de tren en España
 <section id="mapas-geográficos" class="level3" data-number="7.2.8">
 <h3 data-number="7.2.8" class="anchored" data-anchor-id="mapas-geográficos"><span class="header-section-number">7.2.8</span> Mapas geográficos</h3>
 <div class="cell" data-fig-with="10">
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>hypsobath <span class="ot">&lt;-</span> <span class="fu">esp_get_hypsobath</span>()</span>
-<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Error on the data provided - There is an empty shape</span></span>
-<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove:</span></span>
-<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>hypsobath <span class="ot">&lt;-</span> hypsobath[<span class="sc">!</span>sf<span class="sc">::</span><span class="fu">st_is_empty</span>(hypsobath), ]</span>
-<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Tints from Wikipedia</span></span>
-<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a><span class="co"># https://en.wikipedia.org/wiki/Wikipedia:WikiProject_Maps/Conventions/</span></span>
-<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Topographic_maps</span></span>
-<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>bath_tints <span class="ot">&lt;-</span> <span class="fu">colorRampPalette</span>(</span>
-<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rev</span>(</span>
-<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(</span>
-<span id="cb29-15"><a href="#cb29-15" aria-hidden="true" tabindex="-1"></a>      <span class="st">"#D8F2FE"</span>, <span class="st">"#C6ECFF"</span>, <span class="st">"#B9E3FF"</span>,</span>
-<span id="cb29-16"><a href="#cb29-16" aria-hidden="true" tabindex="-1"></a>      <span class="st">"#ACDBFB"</span>, <span class="st">"#A1D2F7"</span>, <span class="st">"#96C9F0"</span>,</span>
-<span id="cb29-17"><a href="#cb29-17" aria-hidden="true" tabindex="-1"></a>      <span class="st">"#8DC1EA"</span>, <span class="st">"#84B9E3"</span>, <span class="st">"#79B2DE"</span>,</span>
-<span id="cb29-18"><a href="#cb29-18" aria-hidden="true" tabindex="-1"></a>      <span class="st">"#71ABD8"</span></span>
-<span id="cb29-19"><a href="#cb29-19" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb29-20"><a href="#cb29-20" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb29-21"><a href="#cb29-21" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb29-22"><a href="#cb29-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-23"><a href="#cb29-23" aria-hidden="true" tabindex="-1"></a>hyps_tints <span class="ot">&lt;-</span> <span class="fu">colorRampPalette</span>(</span>
-<span id="cb29-24"><a href="#cb29-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rev</span>(</span>
-<span id="cb29-25"><a href="#cb29-25" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(</span>
-<span id="cb29-26"><a href="#cb29-26" aria-hidden="true" tabindex="-1"></a>      <span class="st">"#F5F4F2"</span>, <span class="st">"#E0DED8"</span>, <span class="st">"#CAC3B8"</span>, <span class="st">"#BAAE9A"</span>,</span>
-<span id="cb29-27"><a href="#cb29-27" aria-hidden="true" tabindex="-1"></a>      <span class="st">"#AC9A7C"</span>, <span class="st">"#AA8753"</span>, <span class="st">"#B9985A"</span>, <span class="st">"#C3A76B"</span>,</span>
-<span id="cb29-28"><a href="#cb29-28" aria-hidden="true" tabindex="-1"></a>      <span class="st">"#CAB982"</span>, <span class="st">"#D3CA9D"</span>, <span class="st">"#DED6A3"</span>, <span class="st">"#E8E1B6"</span>,</span>
-<span id="cb29-29"><a href="#cb29-29" aria-hidden="true" tabindex="-1"></a>      <span class="st">"#EFEBC0"</span>, <span class="st">"#E1E4B5"</span>, <span class="st">"#D1D7AB"</span>, <span class="st">"#BDCC96"</span>,</span>
-<span id="cb29-30"><a href="#cb29-30" aria-hidden="true" tabindex="-1"></a>      <span class="st">"#A8C68F"</span>, <span class="st">"#94BF8B"</span>, <span class="st">"#ACD0A5"</span></span>
-<span id="cb29-31"><a href="#cb29-31" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb29-32"><a href="#cb29-32" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb29-33"><a href="#cb29-33" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb29-34"><a href="#cb29-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-35"><a href="#cb29-35" aria-hidden="true" tabindex="-1"></a>levels <span class="ot">&lt;-</span> <span class="fu">sort</span>(<span class="fu">unique</span>(hypsobath<span class="sc">$</span>val_inf))</span>
-<span id="cb29-36"><a href="#cb29-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-37"><a href="#cb29-37" aria-hidden="true" tabindex="-1"></a><span class="co"># Create palette</span></span>
-<span id="cb29-38"><a href="#cb29-38" aria-hidden="true" tabindex="-1"></a>br_bath <span class="ot">&lt;-</span> <span class="fu">length</span>(levels[levels <span class="sc">&lt;</span> <span class="dv">0</span>])</span>
-<span id="cb29-39"><a href="#cb29-39" aria-hidden="true" tabindex="-1"></a>br_terrain <span class="ot">&lt;-</span> <span class="fu">length</span>(levels) <span class="sc">-</span> br_bath</span>
-<span id="cb29-40"><a href="#cb29-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-41"><a href="#cb29-41" aria-hidden="true" tabindex="-1"></a>pal <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">bath_tints</span>((br_bath)), <span class="fu">hyps_tints</span>((br_terrain)))</span>
-<span id="cb29-42"><a href="#cb29-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-43"><a href="#cb29-43" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(hypsobath) <span class="sc">+</span></span>
-<span id="cb29-44"><a href="#cb29-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> <span class="fu">as.factor</span>(val_inf)),</span>
-<span id="cb29-45"><a href="#cb29-45" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="cn">NA</span></span>
-<span id="cb29-46"><a href="#cb29-46" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb29-47"><a href="#cb29-47" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_sf</span>(</span>
-<span id="cb29-48"><a href="#cb29-48" aria-hidden="true" tabindex="-1"></a>    <span class="at">xlim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">9.5</span>, <span class="fl">4.4</span>),</span>
-<span id="cb29-49"><a href="#cb29-49" aria-hidden="true" tabindex="-1"></a>    <span class="at">ylim =</span> <span class="fu">c</span>(<span class="fl">35.8</span>, <span class="dv">44</span>)</span>
-<span id="cb29-50"><a href="#cb29-50" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb29-51"><a href="#cb29-51" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> pal) <span class="sc">+</span></span>
-<span id="cb29-52"><a href="#cb29-52" aria-hidden="true" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">fill =</span> <span class="fu">guide_legend</span>(</span>
-<span id="cb29-53"><a href="#cb29-53" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Elevation"</span>,</span>
-<span id="cb29-54"><a href="#cb29-54" aria-hidden="true" tabindex="-1"></a>    <span class="at">reverse =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb29-55"><a href="#cb29-55" aria-hidden="true" tabindex="-1"></a>    <span class="at">keyheight =</span> .<span class="dv">8</span></span>
-<span id="cb29-56"><a href="#cb29-56" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>hypsobath <span class="ot">&lt;-</span> <span class="fu">esp_get_hypsobath</span>()</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Error on the data provided - There is an empty shape</span></span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove:</span></span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>hypsobath <span class="ot">&lt;-</span> hypsobath[<span class="sc">!</span>sf<span class="sc">::</span><span class="fu">st_is_empty</span>(hypsobath), ]</span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Tints from Wikipedia</span></span>
+<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a><span class="co"># https://en.wikipedia.org/wiki/Wikipedia:WikiProject_Maps/Conventions/</span></span>
+<span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Topographic_maps</span></span>
+<span id="cb37-11"><a href="#cb37-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-12"><a href="#cb37-12" aria-hidden="true" tabindex="-1"></a>bath_tints <span class="ot">&lt;-</span> <span class="fu">colorRampPalette</span>(</span>
+<span id="cb37-13"><a href="#cb37-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rev</span>(</span>
+<span id="cb37-14"><a href="#cb37-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(</span>
+<span id="cb37-15"><a href="#cb37-15" aria-hidden="true" tabindex="-1"></a>      <span class="st">"#D8F2FE"</span>, <span class="st">"#C6ECFF"</span>, <span class="st">"#B9E3FF"</span>,</span>
+<span id="cb37-16"><a href="#cb37-16" aria-hidden="true" tabindex="-1"></a>      <span class="st">"#ACDBFB"</span>, <span class="st">"#A1D2F7"</span>, <span class="st">"#96C9F0"</span>,</span>
+<span id="cb37-17"><a href="#cb37-17" aria-hidden="true" tabindex="-1"></a>      <span class="st">"#8DC1EA"</span>, <span class="st">"#84B9E3"</span>, <span class="st">"#79B2DE"</span>,</span>
+<span id="cb37-18"><a href="#cb37-18" aria-hidden="true" tabindex="-1"></a>      <span class="st">"#71ABD8"</span></span>
+<span id="cb37-19"><a href="#cb37-19" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb37-20"><a href="#cb37-20" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb37-21"><a href="#cb37-21" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb37-22"><a href="#cb37-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-23"><a href="#cb37-23" aria-hidden="true" tabindex="-1"></a>hyps_tints <span class="ot">&lt;-</span> <span class="fu">colorRampPalette</span>(</span>
+<span id="cb37-24"><a href="#cb37-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rev</span>(</span>
+<span id="cb37-25"><a href="#cb37-25" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(</span>
+<span id="cb37-26"><a href="#cb37-26" aria-hidden="true" tabindex="-1"></a>      <span class="st">"#F5F4F2"</span>, <span class="st">"#E0DED8"</span>, <span class="st">"#CAC3B8"</span>, <span class="st">"#BAAE9A"</span>,</span>
+<span id="cb37-27"><a href="#cb37-27" aria-hidden="true" tabindex="-1"></a>      <span class="st">"#AC9A7C"</span>, <span class="st">"#AA8753"</span>, <span class="st">"#B9985A"</span>, <span class="st">"#C3A76B"</span>,</span>
+<span id="cb37-28"><a href="#cb37-28" aria-hidden="true" tabindex="-1"></a>      <span class="st">"#CAB982"</span>, <span class="st">"#D3CA9D"</span>, <span class="st">"#DED6A3"</span>, <span class="st">"#E8E1B6"</span>,</span>
+<span id="cb37-29"><a href="#cb37-29" aria-hidden="true" tabindex="-1"></a>      <span class="st">"#EFEBC0"</span>, <span class="st">"#E1E4B5"</span>, <span class="st">"#D1D7AB"</span>, <span class="st">"#BDCC96"</span>,</span>
+<span id="cb37-30"><a href="#cb37-30" aria-hidden="true" tabindex="-1"></a>      <span class="st">"#A8C68F"</span>, <span class="st">"#94BF8B"</span>, <span class="st">"#ACD0A5"</span></span>
+<span id="cb37-31"><a href="#cb37-31" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb37-32"><a href="#cb37-32" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb37-33"><a href="#cb37-33" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb37-34"><a href="#cb37-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-35"><a href="#cb37-35" aria-hidden="true" tabindex="-1"></a>levels <span class="ot">&lt;-</span> <span class="fu">sort</span>(<span class="fu">unique</span>(hypsobath<span class="sc">$</span>val_inf))</span>
+<span id="cb37-36"><a href="#cb37-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-37"><a href="#cb37-37" aria-hidden="true" tabindex="-1"></a><span class="co"># Create palette</span></span>
+<span id="cb37-38"><a href="#cb37-38" aria-hidden="true" tabindex="-1"></a>br_bath <span class="ot">&lt;-</span> <span class="fu">length</span>(levels[levels <span class="sc">&lt;</span> <span class="dv">0</span>])</span>
+<span id="cb37-39"><a href="#cb37-39" aria-hidden="true" tabindex="-1"></a>br_terrain <span class="ot">&lt;-</span> <span class="fu">length</span>(levels) <span class="sc">-</span> br_bath</span>
+<span id="cb37-40"><a href="#cb37-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-41"><a href="#cb37-41" aria-hidden="true" tabindex="-1"></a>pal <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">bath_tints</span>((br_bath)), <span class="fu">hyps_tints</span>((br_terrain)))</span>
+<span id="cb37-42"><a href="#cb37-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-43"><a href="#cb37-43" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(hypsobath) <span class="sc">+</span></span>
+<span id="cb37-44"><a href="#cb37-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> <span class="fu">as.factor</span>(val_inf)),</span>
+<span id="cb37-45"><a href="#cb37-45" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="cn">NA</span></span>
+<span id="cb37-46"><a href="#cb37-46" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb37-47"><a href="#cb37-47" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_sf</span>(</span>
+<span id="cb37-48"><a href="#cb37-48" aria-hidden="true" tabindex="-1"></a>    <span class="at">xlim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">9.5</span>, <span class="fl">4.4</span>),</span>
+<span id="cb37-49"><a href="#cb37-49" aria-hidden="true" tabindex="-1"></a>    <span class="at">ylim =</span> <span class="fu">c</span>(<span class="fl">35.8</span>, <span class="dv">44</span>)</span>
+<span id="cb37-50"><a href="#cb37-50" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb37-51"><a href="#cb37-51" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> pal) <span class="sc">+</span></span>
+<span id="cb37-52"><a href="#cb37-52" aria-hidden="true" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">fill =</span> <span class="fu">guide_legend</span>(</span>
+<span id="cb37-53"><a href="#cb37-53" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Elevation"</span>,</span>
+<span id="cb37-54"><a href="#cb37-54" aria-hidden="true" tabindex="-1"></a>    <span class="at">reverse =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb37-55"><a href="#cb37-55" aria-hidden="true" tabindex="-1"></a>    <span class="at">keyheight =</span> .<span class="dv">8</span></span>
+<span id="cb37-56"><a href="#cb37-56" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div id="fig-hypsobath-main-spain" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -792,29 +947,29 @@ Figura&nbsp;7.11: Mapa dinámico de ubicaciones de estaciones de tren en España
 <img src="07-casos-estudio_files/figure-html/fig-hypsobath-main-spain-1.png" class="img-fluid figure-img" width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-hypsobath-main-spain-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figura&nbsp;7.12: Mapa orográfico (altitudes) de España, sin incluir Canarias.
+Figura&nbsp;7.14: Mapa orográfico (altitudes) de España, sin incluir Canarias.
 </figcaption>
 </figure>
 </div>
 </div>
 </div>
 <div class="cell" data-fig-with="10">
-<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>hydroland <span class="ot">&lt;-</span> <span class="fu">esp_get_hydrobasin</span>(<span class="at">domain =</span> <span class="st">"land"</span>)</span>
-<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>hydrolandsea <span class="ot">&lt;-</span> <span class="fu">esp_get_hydrobasin</span>(<span class="at">domain =</span> <span class="st">"landsea"</span>)</span>
-<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(hydroland) <span class="sc">+</span></span>
-<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> hydrolandsea, <span class="at">fill =</span> <span class="st">"skyblue4"</span>, <span class="at">alpha =</span> .<span class="dv">4</span>) <span class="sc">+</span></span>
-<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">fill =</span> <span class="st">"skyblue"</span>, <span class="at">alpha =</span> .<span class="dv">5</span>) <span class="sc">+</span></span>
-<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> rotulo),</span>
-<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="dv">3</span>, <span class="at">check_overlap =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">fontface =</span> <span class="st">"bold"</span>,</span>
-<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">family =</span> <span class="st">"serif"</span></span>
-<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_sf</span>(</span>
-<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">xlim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">9.5</span>, <span class="fl">4.5</span>),</span>
-<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">35</span>, <span class="dv">44</span>)</span>
-<span id="cb30-15"><a href="#cb30-15" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb30-16"><a href="#cb30-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_void</span>()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>hydroland <span class="ot">&lt;-</span> <span class="fu">esp_get_hydrobasin</span>(<span class="at">domain =</span> <span class="st">"land"</span>)</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>hydrolandsea <span class="ot">&lt;-</span> <span class="fu">esp_get_hydrobasin</span>(<span class="at">domain =</span> <span class="st">"landsea"</span>)</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(hydroland) <span class="sc">+</span></span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> hydrolandsea, <span class="at">fill =</span> <span class="st">"skyblue4"</span>, <span class="at">alpha =</span> .<span class="dv">4</span>) <span class="sc">+</span></span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">fill =</span> <span class="st">"skyblue"</span>, <span class="at">alpha =</span> .<span class="dv">5</span>) <span class="sc">+</span></span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> rotulo),</span>
+<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="dv">3</span>, <span class="at">check_overlap =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">fontface =</span> <span class="st">"bold"</span>,</span>
+<span id="cb38-10"><a href="#cb38-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">family =</span> <span class="st">"serif"</span></span>
+<span id="cb38-11"><a href="#cb38-11" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb38-12"><a href="#cb38-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_sf</span>(</span>
+<span id="cb38-13"><a href="#cb38-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">xlim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">9.5</span>, <span class="fl">4.5</span>),</span>
+<span id="cb38-14"><a href="#cb38-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">35</span>, <span class="dv">44</span>)</span>
+<span id="cb38-15"><a href="#cb38-15" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb38-16"><a href="#cb38-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_void</span>()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning in st_point_on_surface.sfc(sf::st_zm(x)): st_point_on_surface may not
 give correct results for longitude/latitude data</code></pre>
@@ -826,20 +981,300 @@ give correct results for longitude/latitude data</code></pre>
 <img src="07-casos-estudio_files/figure-html/fig-hydrobasin-spain-1.png" class="img-fluid figure-img" width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-hydrobasin-spain-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figura&nbsp;7.13: Mapa de las cuencas hidrográficas en territorio español.
+Figura&nbsp;7.15: Mapa de las cuencas hidrográficas en territorio español.
 </figcaption>
 </figure>
 </div>
 </div>
 </div>
+</section>
+</section>
+<section id="ejemplos-para-el-paquete-terra-gráficos-raster" class="level2 page-columns page-full" data-number="7.3">
+<h2 data-number="7.3" class="anchored" data-anchor-id="ejemplos-para-el-paquete-terra-gráficos-raster"><span class="header-section-number">7.3</span> Ejemplos para el paquete terra (gráficos raster)</h2>
+<p>El paquete <code>terra</code> nos permite representar datos ráster (o de trama), que es un formato de datos geoespaciales que representa un área como una cuadrícula de celdas (píxeles). Cada una de estas celdas contiene un valor que representa un atributo o propiedad en una ubicación específica. Este tipo de datos se puede utilizar para mostrar información como imágenes de satélite (por ejemplo, en formatos TIFF, GeoTIFF o JPEG), elevación, temperatura, humedad, precipitación o fotografías aéreas, ya que es compatible con datos tanto continuos como categóricos.</p>
+<p>La <a href="#fig-elevation-luxembourg" class="quarto-xref">Figura&nbsp;<span>7.16</span></a> muestra un primer ejemplo de representació de datos de elevación en Luxemburgo.</p>
+<div class="cell" data-fig-with="5">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(terra)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>terra 1.8.70</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Adjuntando el paquete: 'terra'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:tidyr':
 
+    extract</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:Hmisc':
 
-<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list" style="display: none">
-<div id="ref-healy2019" class="csl-entry" role="listitem">
-Healy, K. (2019). <em>Data Visualization. A Practical Introduction</em>. Princeton University Press. <a href="https://socviz.co/">https://socviz.co/</a>
+    describe, mask, zoom</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>raster_path <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">"ex/elev.tif"</span>, <span class="at">package =</span> <span class="st">"terra"</span>)</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>r <span class="ot">&lt;-</span> <span class="fu">rast</span>(raster_path)</span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(r)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-elevation-luxembourg" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-elevation-luxembourg-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="07-casos-estudio_files/figure-html/fig-elevation-luxembourg-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-elevation-luxembourg-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;7.16: Mapa de trama (ráster) que representa datos de elevación en Luxemburgo. Fuente: paquete <code>terra</code>.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>El siguiente ejemplo esta tomado de <span class="citation" data-cites="moraga2023">(<a href="references.html#ref-moraga2023" role="doc-biblioref">Moraga, 2023</a>)</span> y utiliza el paquete adicional <code>geodata</code>, que incluye numerosas funciones para descargar datos geográficos. La página de <a href="https://github.com/rspatial/geodata?tab=readme-ov-file#data">descripción del repositorio de GitHub</a> para este paquete muestra una extensa lista de fuentes de datos que se pueden obtener mediante estas funciones. En la <a href="#fig-monthly-avg-temp-spain" class="quarto-xref">Figura&nbsp;<span>7.17</span></a>, usamos datos del proyecto <a href="https://worldclim.org/data/index.html">WorldClim</a> sobre la temperatura mensual promedio en diferentes zonas de España.</p>
+<div class="cell page-columns page-full" data-fig-with="12">
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>es_temp_monthly <span class="ot">&lt;-</span> geodata<span class="sc">::</span><span class="fu">worldclim_country</span>(<span class="at">country =</span> <span class="st">"Spain"</span>, <span class="at">var =</span> <span class="st">"tavg"</span>,</span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>                                <span class="at">res =</span> <span class="dv">10</span>, <span class="at">path =</span> <span class="st">"data/ESP_wc2.1_30s_tavg.tif"</span>)</span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(es_temp_monthly)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display page-columns page-full">
+<div id="fig-monthly-avg-temp-spain" class="quarto-float quarto-figure quarto-figure-center anchored page-columns page-full">
+<figure class="quarto-float quarto-float-fig figure page-columns page-full">
+<div aria-describedby="fig-monthly-avg-temp-spain-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca" class="page-columns page-full">
+<img src="07-casos-estudio_files/figure-html/fig-monthly-avg-temp-spain-1.png" class="img-fluid figure-img column-page-right" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-monthly-avg-temp-spain-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;7.17: Temperaturas promedio mensuales en España (ºC). Fuente: <a href="https://www.worldclim.org/data/index.html">WorldClim</a>, via paquete <code>geodata</code>.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Debemos recordar que estos datos están almacenados en una trama o ráster, por lo que es bastante sencillo calcular, por ejemplo, valores promedios de todos los meses para una representación de la temperatura media anual.</p>
+<div class="cell page-columns page-full" data-fig-with="12">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>es_temp_yearly <span class="ot">&lt;-</span> <span class="fu">mean</span>(es_temp_monthly)</span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(r)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display page-columns page-full">
+<div id="fig-yearly-avg-temp-spain" class="quarto-float quarto-figure quarto-figure-center anchored page-columns page-full">
+<figure class="quarto-float quarto-float-fig figure page-columns page-full">
+<div aria-describedby="fig-yearly-avg-temp-spain-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca" class="page-columns page-full">
+<img src="07-casos-estudio_files/figure-html/fig-yearly-avg-temp-spain-1.png" class="img-fluid figure-img column-page-right" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-yearly-avg-temp-spain-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;7.18: Temperaturas promedio anuales en España (ºC). Fuente: <a href="https://www.worldclim.org/data/index.html">WorldClim</a>, via paquete <code>geodata</code>.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<section id="imágenes-satelitales" class="level3" data-number="7.3.1">
+<h3 data-number="7.3.1" class="anchored" data-anchor-id="imágenes-satelitales"><span class="header-section-number">7.3.1</span> Imágenes satelitales</h3>
+<ul>
+<li>URL: <a href="https://rspatial.org/rs/rs.pdf" class="uri">https://rspatial.org/rs/rs.pdf</a>.</li>
+</ul>
+<p>También se pueden representar imágenes satelitales utilizando el paquete <code>terra</code>. En el siguiente ejemplo, cargamos 11 archivos de las correspondientes bandas de teledetección proporcionadas por Landsat 8, el 14 de junio de 2017 en un area entre Concord y Stockton (CA, EE.UU.). Por ejemplo, estas imágenes nos permiten realizar análisis comunes en ecología, como el cálculo del NDVI (Índice de Vegetación de Diferencia Normalizada).</p>
+<div class="cell" data-fig-with="10">
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="co"># En un caso real, aquí se introduce la ruta a tu propio archivo</span></span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a><span class="co"># .tif o .jp2 de Sentinel-2, Landsat u otro proyecto que ofrezca imágenes satelitales </span></span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Cargamos la imagen como un objeto SpatRaster</span></span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>sat_all_bands <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">'data/rs/LC08_044034_20170614_B'</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">11</span>, <span class="st">".tif"</span>)</span>
+<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Carga de imágenes en varias bandas por separado</span></span>
+<span id="cb48-8"><a href="#cb48-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Blue</span></span>
+<span id="cb48-9"><a href="#cb48-9" aria-hidden="true" tabindex="-1"></a>b2 <span class="ot">&lt;-</span> <span class="fu">rast</span>(sat_all_bands[<span class="dv">2</span>])</span>
+<span id="cb48-10"><a href="#cb48-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Green</span></span>
+<span id="cb48-11"><a href="#cb48-11" aria-hidden="true" tabindex="-1"></a>b3 <span class="ot">&lt;-</span> <span class="fu">rast</span>(sat_all_bands[<span class="dv">3</span>])</span>
+<span id="cb48-12"><a href="#cb48-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Red</span></span>
+<span id="cb48-13"><a href="#cb48-13" aria-hidden="true" tabindex="-1"></a>b4 <span class="ot">&lt;-</span> <span class="fu">rast</span>(sat_all_bands[<span class="dv">4</span>])</span>
+<span id="cb48-14"><a href="#cb48-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Near Infrared (NIR)</span></span>
+<span id="cb48-15"><a href="#cb48-15" aria-hidden="true" tabindex="-1"></a>b5 <span class="ot">&lt;-</span> <span class="fu">rast</span>(sat_all_bands[<span class="dv">5</span>])</span>
+<span id="cb48-16"><a href="#cb48-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-17"><a href="#cb48-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Sistema de Coordenadas de Referencia (CRS)</span></span>
+<span id="cb48-18"><a href="#cb48-18" aria-hidden="true" tabindex="-1"></a><span class="co"># crs(b2)</span></span>
+<span id="cb48-19"><a href="#cb48-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Número total de celdas, filas y columnas de la trama</span></span>
+<span id="cb48-20"><a href="#cb48-20" aria-hidden="true" tabindex="-1"></a><span class="fu">ncell</span>(b2)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1863765</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] 1863765</span></span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(b2)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1245 1497    1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] 1245 1497 1</span></span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Resolución espacial</span></span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a><span class="fu">res</span>(b2)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 30 30</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] 30 30</span></span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Número de capas (bandas en argot de teledetección)</span></span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a><span class="fu">nlyr</span>(b2)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] 1</span></span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>b2</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>class       : SpatRaster 
+size        : 1245, 1497, 1  (nrow, ncol, nlyr)
+resolution  : 30, 30  (x, y)
+extent      : 594090, 639000, 4190190, 4227540  (xmin, xmax, ymin, ymax)
+coord. ref. : WGS 84 / UTM zone 10N (EPSG:32610) 
+source      : LC08_044034_20170614_B2.tif 
+name        : LC08_044034_20170614_B2 
+min value   :               0.0748399 
+max value   :               0.7177562 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Comparar la extensión, número de filas y columnas, proyección,</span></span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a><span class="co"># resolución y origen de dos imágenes de bandas</span></span>
+<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a><span class="fu">compareGeom</span>(b2, b3)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>landsat <span class="ot">&lt;-</span> <span class="fu">rast</span>(sat_all_bands)</span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a>landsat</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>class       : SpatRaster 
+size        : 1245, 1497, 11  (nrow, ncol, nlyr)
+resolution  : 30, 30  (x, y)
+extent      : 594090, 639000, 4190190, 4227540  (xmin, xmax, ymin, ymax)
+coord. ref. : WGS 84 / UTM zone 10N (EPSG:32610) 
+sources     : LC08_044034_20170614_B1.tif  
+              LC08_044034_20170614_B2.tif  
+              LC08_044034_20170614_B3.tif  
+              ... and 8 more sources
+names       : LC08_~14_B1, LC08_~14_B2, LC08_~14_B3, LC08_~14_B4,  LC08_~14_B5,  LC08_~14_B6, ... 
+min values  :  0.09641791,   0.0748399,  0.04259216,  0.02084067, 0.0008457669, -0.007872183, ... 
+max values  :  0.73462820,   0.7177562,  0.69246972,  0.78617686, 1.0124315023,  1.043204546, ... </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">2</span>))</span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(b2, <span class="at">main =</span> <span class="st">"Blue"</span>, <span class="at">col =</span> <span class="fu">gray</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">100</span> <span class="sc">/</span> <span class="dv">100</span>))</span>
+<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(b3, <span class="at">main =</span> <span class="st">"Green"</span>, <span class="at">col =</span> <span class="fu">gray</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">100</span> <span class="sc">/</span> <span class="dv">100</span>))</span>
+<span id="cb62-4"><a href="#cb62-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(b4, <span class="at">main =</span> <span class="st">"Red"</span>, <span class="at">col =</span> <span class="fu">gray</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">100</span> <span class="sc">/</span> <span class="dv">100</span>))</span>
+<span id="cb62-5"><a href="#cb62-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(b5, <span class="at">main =</span> <span class="st">"NIR"</span>, <span class="at">col =</span> <span class="fu">gray</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">100</span> <span class="sc">/</span> <span class="dv">100</span>))</span>
+<span id="cb62-6"><a href="#cb62-6" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>)) <span class="co"># Reseteo plot grid</span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-landsat-bands" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-landsat-bands-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="07-casos-estudio_files/figure-html/fig-landsat-bands-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-landsat-bands-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;7.19: Imágenes satelitales en 4 bandas diferentes para un area entre Concord y Stockton (CA, EE.UU.), tomadas el 14 de junio de 2017.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Para obtener imágenes más semejantes a las de una fotografía tenemos que combinar las bandas 4 (rojo), 3 (verde) y 2 (azul), para lo cual usamos la función <code>plotRGB</code>.</p>
+<div class="cell" data-fig-with="10">
+<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a>landsatRGB <span class="ot">&lt;-</span> <span class="fu">c</span>(b4, b3, b2)</span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plotRGB</span>(landsatRGB, <span class="at">stretch =</span> <span class="st">"lin"</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-landsat-rgb" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-landsat-rgb-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="07-casos-estudio_files/figure-html/fig-landsat-rgb-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-landsat-rgb-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;7.20: Imagen satelital de un area entre Concord y Stockton (CA, EE.UU.) en formato RGB.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Otro método de visualización muy popular en teledetección es el conocido como “falso color”, que combina las bandas NIR (5), rojo (4) y verde (3). En este caso, las manchas en tonos rojizos nos indican la ubicación de zonas de vegetación.</p>
+<div class="cell" data-fig-with="10">
+<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a>landsatFCC <span class="ot">&lt;-</span> <span class="fu">c</span>(b5, b4, b3)</span>
+<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plotRGB</span>(landsatFCC, <span class="at">stretch =</span> <span class="st">"lin"</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-landsat-false-colour" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-landsat-false-colour-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="07-casos-estudio_files/figure-html/fig-landsat-false-colour-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-landsat-false-colour-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;7.21: Imagen satelital en falso color de un area entre Concord y Stockton (CA, EE.UU.).
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Por último, podemos calcular el índice NDVI.</p>
+<div class="cell" data-fig-with="10">
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>vi <span class="ot">&lt;-</span> <span class="cf">function</span>(img, k, i) {</span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a>  bk <span class="ot">&lt;-</span> img[[k]]</span>
+<span id="cb65-3"><a href="#cb65-3" aria-hidden="true" tabindex="-1"></a>  bi <span class="ot">&lt;-</span> img[[i]]</span>
+<span id="cb65-4"><a href="#cb65-4" aria-hidden="true" tabindex="-1"></a>  vi <span class="ot">&lt;-</span> (bk <span class="sc">-</span> bi) <span class="sc">/</span> (bk <span class="sc">+</span> bi)</span>
+<span id="cb65-5"><a href="#cb65-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(vi)</span>
+<span id="cb65-6"><a href="#cb65-6" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb65-7"><a href="#cb65-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb65-8"><a href="#cb65-8" aria-hidden="true" tabindex="-1"></a>ndvi <span class="ot">&lt;-</span> <span class="fu">vi</span>(landsat, <span class="dv">5</span>, <span class="dv">4</span>)</span>
+<span id="cb65-9"><a href="#cb65-9" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(ndvi, <span class="at">col=</span><span class="fu">rev</span>(<span class="fu">terrain.colors</span>(<span class="dv">10</span>)), <span class="at">main =</span> <span class="st">"NDVI"</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-landsat-ndvi" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-landsat-ndvi-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="07-casos-estudio_files/figure-html/fig-landsat-ndvi-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-landsat-ndvi-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;7.22: Representación de valores del NDVI de un area entre Concord y Stockton (CA, EE.UU.).
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell" data-fig-with="10">
+<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(ndvi, <span class="at">main =</span> <span class="st">"NDVI values"</span>, <span class="at">xlab =</span> <span class="st">"NDVI"</span>, <span class="at">ylab=</span> <span class="st">"Frequency"</span>,</span>
+<span id="cb66-2"><a href="#cb66-2" aria-hidden="true" tabindex="-1"></a><span class="at">col =</span> <span class="st">"wheat"</span>, <span class="at">xlim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">0.5</span>, <span class="dv">1</span>), <span class="at">breaks =</span> <span class="dv">30</span>, <span class="at">xaxt =</span> <span class="st">"n"</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: [hist] a sample of 54% of the cells was used</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Warning: [hist] a sample of54% of the cells was used</span></span>
+<span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a><span class="fu">axis</span>(<span class="at">side=</span><span class="dv">1</span>, <span class="at">at =</span> <span class="fu">seq</span>(<span class="sc">-</span><span class="fl">0.6</span>, <span class="dv">1</span>, <span class="fl">0.2</span>), <span class="at">labels =</span> <span class="fu">seq</span>(<span class="sc">-</span><span class="fl">0.6</span>, <span class="dv">1</span>, <span class="fl">0.2</span>))</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-landsat-ndvi-hist" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-landsat-ndvi-hist-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="07-casos-estudio_files/figure-html/fig-landsat-ndvi-hist-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-landsat-ndvi-hist-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;7.23: Representación del histograma de valores del NDVI contenidos en una imagen de un area entre Concord y Stockton (CA, EE.UU.).
+</figcaption>
+</figure>
+</div>
 </div>
 </div>
 </section>
+</section>
+<section id="tutorial-paquete-rsi" class="level2" data-number="7.4">
+<h2 data-number="7.4" class="anchored" data-anchor-id="tutorial-paquete-rsi"><span class="header-section-number">7.4</span> Tutorial paquete <code>rsi</code></h2>
+<ul>
+<li>URL: <a href="https://geocompx.org/post/2024/rsi-bp1/" class="uri">https://geocompx.org/post/2024/rsi-bp1/</a></li>
+</ul>
+<p>El paquete <code>rsi</code> de reciente creación a cargo de Michael Mahoney incluye muchas características que simplifican el proceso de adquisición de datos espaciales de STAC (Spatio Temporal Asset Catalog) y el cálculo de índices espectrales (como el NVDI) basados en esos datos. Los índices se obtienen del proyecto <a href="https://awesome-ee-spectral-indices.readthedocs.io/en/latest/">Awesome Spectral Indices</a>, lo que simplifica los procesos de teledetcción en combinación con datos STAC, así como la automaticación del cálculo de índices espectrales para áreas amplias y largos periodos de tiempo.</p>
+</section>
+<section id="caso-de-estudio-en-ecología" class="level2" data-number="7.5">
+<h2 data-number="7.5" class="anchored" data-anchor-id="caso-de-estudio-en-ecología"><span class="header-section-number">7.5</span> Caso de estudio en ecología</h2>
+<ul>
+<li>URL: <a href="https://r.geocompx.org/eco" class="uri">https://r.geocompx.org/eco</a>.</li>
+</ul>
+<p>La segunda edición en línea del libro <em>Geocomputation with R</em> <span class="citation" data-cites="Lovelace2025">(<a href="references.html#ref-Lovelace2025" role="doc-biblioref">Lovelace et&nbsp;al., 2025</a>)</span> incluye un caso de estudio interesante, que analiza la composición y la distribución espacial de las plantas vasculares (en este caso, principalmente plantas con flores) en la ladera sur del monte Mongón, una sierra cercana a Casma, en la costa centro-norte de Perú.</p>
+<p>En ese ejemplo se puede observar cómo combinar varios de los paquetes que hemos presentado en este taller para efectuar representación de datos espaciales, en un caso de aplicación de ecología.</p>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list" style="display: none">
+<div id="ref-fahrmeir2022" class="csl-entry" role="listitem">
+Fahrmeir, L., Kneib, T., Lang, S., &amp; Marx, B. D. (2022). <em>Regression: <span>M</span>odels, <span>M</span>ethods and <span>A</span>pplicatons</em> (2.ª ed.). Springer-Verlag GmbH. <a href="https://doi.org/10.1007/978-3-662-63882-8">https://doi.org/10.1007/978-3-662-63882-8</a>
+</div>
+<div id="ref-healy2019" class="csl-entry" role="listitem">
+Healy, K. (2019). <em>Data Visualization. A Practical Introduction</em>. Princeton University Press. <a href="https://socviz.co/">https://socviz.co/</a>
+</div>
+<div id="ref-Lovelace2025" class="csl-entry" role="listitem">
+Lovelace, R., Nowosad, J., &amp; Muenchow, J. (2025). <em>Geocomputation with R</em>. Chapman; Hall/CRC.
+</div>
+<div id="ref-moraga2023" class="csl-entry" role="listitem">
+Moraga, P. (2023). <em>Spatial Statistics for Data Science: Theory and Practice with R</em>. Chapman &amp; Hall/CRC Press. <a href="https://doi.org/10.1201/9781032641522">https://doi.org/10.1201/9781032641522</a>
+</div>
+</div>
 </section>
 
 </main> <!-- /main -->
