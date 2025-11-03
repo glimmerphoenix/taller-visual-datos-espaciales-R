@@ -544,3 +544,208 @@ ggplot(hydroland) +
   ) +
   theme_void()
 ```
+
+## Ejemplos para el paquete terra (gráficos raster)
+
+El paquete `terra` nos permite representar datos ráster (o de trama), que es un formato de datos
+geoespaciales que representa un área como una cuadrícula de celdas (píxeles). Cada una de estas
+celdas contiene un valor que representa un atributo o propiedad en una ubicación específica.
+Este tipo de datos se puede utilizar para mostrar información como imágenes de satélite (por ejemplo,
+en formatos TIFF, GeoTIFF o JPEG), elevación, temperatura, humedad, precipitación o fotografías 
+aéreas, ya que es compatible con datos tanto continuos como categóricos.
+
+La @fig-elevation-luxembourg muestra un primer ejemplo de representació de datos de elevación
+en Luxemburgo.
+
+```{r}
+#| label: fig-elevation-luxembourg
+#| fig-cap: "Mapa de trama (ráster) que representa datos de elevación en Luxemburgo. Fuente: paquete `terra`."
+#| fig-height: 8
+#| fig-with: 5
+library(terra)
+
+raster_path <- system.file("ex/elev.tif", package = "terra")
+r <- rast(raster_path)
+plot(r)
+```
+
+El siguiente ejemplo esta tomado de [@moraga2023] y utiliza el paquete adicional
+`geodata`, que incluye numerosas funciones para descargar datos geográficos. La página
+de [descripción del repositorio de GitHub](https://github.com/rspatial/geodata?tab=readme-ov-file#data)
+para este paquete muestra una extensa lista de fuentes de datos que se pueden obtener
+mediante estas funciones. En la @fig-monthly-avg-temp-spain, usamos datos del proyecto
+[WorldClim](https://worldclim.org/data/index.html) sobre la temperatura mensual promedio
+en diferentes zonas de España.
+
+```{r}
+#| label: fig-monthly-avg-temp-spain
+#| fig-cap: "Temperaturas promedio mensuales en España (ºC). Fuente: [WorldClim](https://www.worldclim.org/data/index.html), via paquete `geodata`."
+#| fig-height: 5
+#| fig-with: 12
+#| column : page-right 
+
+es_temp_monthly <- geodata::worldclim_country(country = "Spain", var = "tavg",
+                                res = 10, path = "data/ESP_wc2.1_30s_tavg.tif")
+plot(es_temp_monthly)
+```
+
+Debemos recordar que estos datos están almacenados en una trama o ráster, por lo que es bastante
+sencillo calcular, por ejemplo, valores promedios de todos los meses para una representación de la
+temperatura media anual.
+
+```{r}
+#| label: fig-yearly-avg-temp-spain
+#| fig-cap: "Temperaturas promedio anuales en España (ºC). Fuente: [WorldClim](https://www.worldclim.org/data/index.html), via paquete `geodata`."
+#| fig-height: 8
+#| fig-with: 12
+#| column : page-right 
+
+es_temp_yearly <- mean(es_temp_monthly)
+plot(r)
+```
+
+### Imágenes satelitales
+
+- URL: <https://rspatial.org/rs/rs.pdf>.
+
+También se pueden representar imágenes satelitales utilizando el paquete `terra`. En el siguiente
+ejemplo, cargamos 11 archivos de las correspondientes bandas de teledetección proporcionadas por
+Landsat 8, el 14 de junio de 2017 en un area entre Concord y Stockton (CA, EE.UU.). 
+Por ejemplo, estas imágenes nos permiten realizar análisis comunes en ecología, como el cálculo 
+del NDVI (Índice de Vegetación de Diferencia Normalizada).
+
+```{r}
+#| label: fig-landsat-bands
+#| fig-cap: "Imágenes satelitales en 4 bandas diferentes para un area entre Concord y Stockton (CA, EE.UU.), tomadas el 14 de junio de 2017."
+#| fig-height: 6
+#| fig-with: 10
+
+# En un caso real, aquí se introduce la ruta a tu propio archivo
+# .tif o .jp2 de Sentinel-2, Landsat u otro proyecto que ofrezca imágenes satelitales 
+
+# Cargamos la imagen como un objeto SpatRaster
+sat_all_bands <- paste0('data/rs/LC08_044034_20170614_B', 1:11, ".tif")
+
+# Carga de imágenes en varias bandas por separado
+# Blue
+b2 <- rast(sat_all_bands[2])
+# Green
+b3 <- rast(sat_all_bands[3])
+# Red
+b4 <- rast(sat_all_bands[4])
+# Near Infrared (NIR)
+b5 <- rast(sat_all_bands[5])
+
+# Sistema de Coordenadas de Referencia (CRS)
+# crs(b2)
+# Número total de celdas, filas y columnas de la trama
+ncell(b2)
+## [1] 1863765
+dim(b2)
+## [1] 1245 1497 1
+# Resolución espacial
+res(b2)
+## [1] 30 30
+# Número de capas (bandas en argot de teledetección)
+nlyr(b2)
+## [1] 1
+b2
+
+# Comparar la extensión, número de filas y columnas, proyección,
+# resolución y origen de dos imágenes de bandas
+compareGeom(b2, b3)
+
+landsat <- rast(sat_all_bands)
+landsat
+
+par(mfrow = c(2,2))
+plot(b2, main = "Blue", col = gray(0:100 / 100))
+plot(b3, main = "Green", col = gray(0:100 / 100))
+plot(b4, main = "Red", col = gray(0:100 / 100))
+plot(b5, main = "NIR", col = gray(0:100 / 100))
+par(mfrow=c(1,1)) # Reseteo plot grid
+```
+
+Para obtener imágenes más semejantes a las de una fotografía tenemos que combinar las
+bandas 4 (rojo), 3 (verde) y 2 (azul), para lo cual usamos la función `plotRGB`.
+
+```{r}
+#| label: fig-landsat-rgb
+#| fig-cap: "Imagen satelital de un area entre Concord y Stockton (CA, EE.UU.) en formato RGB."
+#| fig-height: 6
+#| fig-with: 10
+
+landsatRGB <- c(b4, b3, b2)
+plotRGB(landsatRGB, stretch = "lin")
+```
+
+Otro método de visualización muy popular en teledetección es el conocido como "falso color", que
+combina las bandas NIR (5), rojo (4) y verde (3). En este caso, las manchas en tonos rojizos nos
+indican la ubicación de zonas de vegetación.
+
+```{r}
+#| label: fig-landsat-false-colour
+#| fig-cap: "Imagen satelital en falso color de un area entre Concord y Stockton (CA, EE.UU.)."
+#| fig-height: 6
+#| fig-with: 10
+
+landsatFCC <- c(b5, b4, b3)
+plotRGB(landsatFCC, stretch = "lin")
+```
+
+Por último, podemos calcular el índice NDVI.
+
+```{r}
+#| label: fig-landsat-ndvi
+#| fig-cap: "Representación de valores del NDVI de un area entre Concord y Stockton (CA, EE.UU.)."
+#| fig-height: 6
+#| fig-with: 10
+
+vi <- function(img, k, i) {
+  bk <- img[[k]]
+  bi <- img[[i]]
+  vi <- (bk - bi) / (bk + bi)
+  return(vi)
+}
+
+ndvi <- vi(landsat, 5, 4)
+plot(ndvi, col=rev(terrain.colors(10)), main = "NDVI")
+```
+
+```{r}
+#| label: fig-landsat-ndvi-hist
+#| fig-cap: "Representación del histograma de valores del NDVI contenidos en una imagen de un area entre Concord y Stockton (CA, EE.UU.)."
+#| fig-height: 6
+#| fig-with: 10
+
+hist(ndvi, main = "NDVI values", xlab = "NDVI", ylab= "Frequency",
+col = "wheat", xlim = c(-0.5, 1), breaks = 30, xaxt = "n")
+
+## Warning: [hist] a sample of54% of the cells was used
+axis(side=1, at = seq(-0.6, 1, 0.2), labels = seq(-0.6, 1, 0.2))
+```
+
+## Tutorial paquete `rsi`
+
+- URL: <https://geocompx.org/post/2024/rsi-bp1/>
+
+El paquete `rsi` de reciente creación a cargo de Michael Mahoney incluye muchas
+características que simplifican el proceso de adquisición de datos espaciales
+de STAC (Spatio Temporal Asset Catalog) y el cálculo de índices espectrales (como el
+NVDI) basados en esos datos. Los índices se obtienen del proyecto 
+[Awesome Spectral Indices](https://awesome-ee-spectral-indices.readthedocs.io/en/latest/), lo
+que simplifica los procesos de teledetcción en combinación con datos STAC, así como
+la automaticación del cálculo de índices espectrales para áreas amplias y largos
+periodos de tiempo.
+
+## Caso de estudio en ecología
+
+- URL: <https://r.geocompx.org/eco>.
+
+La segunda edición en línea del libro *Geocomputation with R* [@Lovelace2025] incluye
+un caso de estudio interesante, que analiza  la composición y la distribución espacial de las 
+plantas vasculares (en este caso, principalmente plantas con flores) en la ladera sur 
+del monte Mongón, una sierra cercana a Casma, en la costa centro-norte de Perú.
+
+En ese ejemplo se puede observar cómo combinar varios de los paquetes que hemos presentado en este
+taller para efectuar representación de datos espaciales, en un caso de aplicación de ecología.
