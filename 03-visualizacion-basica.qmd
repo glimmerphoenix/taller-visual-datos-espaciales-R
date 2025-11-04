@@ -66,7 +66,7 @@ un resultado final más armonizado.
 Si necesitas más información sobre la utilización del paquete `ggplot2` te recomendamos que consultes
 las siguientes referencias:
 
-- [Capítulo 5](https://www.uni-goettingen.de/de/551625.html) de nuestro curso previo
+- [Capítulo 5](https://glimmerphoenix.github.io/taller-visualizacion-R/05-ggplot2.html) de nuestro curso previo
     *Visualización de Datos con R*, para este mismo programa de doctorado.
 - Manual oficial de `ggplot2`: <https://ggplot2-book.org> (3ª ed., en progreso).
 :::
