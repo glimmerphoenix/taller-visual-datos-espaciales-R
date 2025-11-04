@@ -6,7 +6,7 @@
 Las dos fuentes principales para aprendizaje sobre procesado y análisis de datos espaciales
 en R son:
 
-- [*Geocomputation with R*](<https://r.geocompx.org/>) [@lovelace2025].
+- [*Geocomputation with R*](<https://r.geocompx.org/>) [@Lovelace2025].
 - [*Spatial Data Science: With Applications in R*](<https://r-spatial.org/book/>) [@pebesma2023].
 
 Otras referencias interesantes que explican distintos tipos de modelos de análisis de datos
